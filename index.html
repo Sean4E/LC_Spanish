@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="theme-color" content="#0a0e14">
-    <meta name="description" content="EspañolMaster LC - Interactive Spanish Chemistry study app with flashcards, quizzes, periodic table, and more.">
+    <meta name="description" content="EspañolMaster LC - Interactive Irish Leaving Certificate Spanish study app with flashcards, quizzes, grammar, and more.">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="EspañolMaster LC">
@@ -636,15 +636,15 @@
             <nav class="nav">
                 <button class="nav-btn active" data-section="dashboard"><span class="icon">📊</span><span>Dashboard</span></button>
                 <button class="nav-btn" data-section="topics"><span class="icon">📚</span><span>Topics</span></button>
-                <button class="nav-btn" data-section="periodic"><span class="icon">⚛️</span><span>Periodic Table</span></button>
+                <button class="nav-btn" data-section="periodic"><span class="icon">📖</span><span>Gramática</span></button>
                 <button class="nav-btn" data-section="flashcards"><span class="icon">🃏</span><span>Flashcards</span></button>
                 <button class="nav-btn" data-section="quiz"><span class="icon">❓</span><span>Quiz</span></button>
-                <button class="nav-btn" data-section="calculator"><span class="icon">🧮</span><span>Calculators</span></button>
-                <button class="nav-btn" data-section="formulas"><span class="icon">📐</span><span>Formulas</span></button>
+                <button class="nav-btn" data-section="calculator"><span class="icon">✍️</span><span>Escritura</span></button>
+                <button class="nav-btn" data-section="formulas"><span class="icon">📐</span><span>Frases</span></button>
                 <button class="nav-btn" data-section="mindmaps"><span class="icon">🧠</span><span>Mind Maps</span></button>
-                <button class="nav-btn" data-section="experiments"><span class="icon">🧪</span><span>Experiments</span></button>
-                <button class="nav-btn" data-section="dataTables"><span class="icon">📋</span><span>Data Tables</span></button>
-                <button class="nav-btn" data-section="glossary"><span class="icon">📖</span><span>Glossary</span></button>
+                <button class="nav-btn" data-section="experiments"><span class="icon">📝</span><span>Redacción</span></button>
+                <button class="nav-btn" data-section="dataTables"><span class="icon">📋</span><span>Tablas</span></button>
+                <button class="nav-btn" data-section="glossary"><span class="icon">📚</span><span>Vocabulario</span></button>
                 <button class="nav-btn" data-section="examMode"><span class="icon">🎯</span><span>Exam Mode</span></button>
             </nav>
         </div>
@@ -653,7 +653,7 @@
             <section class="section active" id="dashboard">
                 <div class="section-header">
                     <h1 class="section-title">Welcome back! 👋</h1>
-                    <p class="section-subtitle">Continue your chemistry journey</p>
+                    <p class="section-subtitle">Continúa tu viaje de español</p>
                 </div>
                 <div class="dashboard-grid">
                     <div>
@@ -663,7 +663,7 @@
                                 <a class="quick-action" data-goto="flashcards"><span class="icon">🃏</span><span class="label">Daily Review</span></a>
                                 <a class="quick-action" data-goto="quiz"><span class="icon">❓</span><span class="label">Practice Quiz</span></a>
                                 <a class="quick-action" data-goto="mindmaps"><span class="icon">🧠</span><span class="label">Mind Maps</span></a>
-                                <a class="quick-action" data-goto="calculator"><span class="icon">🧮</span><span class="label">Calculators</span></a>
+                                <a class="quick-action" data-goto="calculator"><span class="icon">✍️</span><span class="label">Escritura</span></a>
                             </div>
                         </div>
                         <div class="card">
@@ -705,7 +705,7 @@
                             <h3 style="margin-bottom: 1rem; text-align: center;">⏰ Exam Countdown</h3>
                             <div id="examCountdown" style="text-align: center;">
                                 <div style="font-size: 2.5rem; font-weight: 700; color: var(--accent-cyan);" id="daysUntilExam">--</div>
-                                <div style="color: var(--text-secondary); font-size: 0.9rem;">days until LC Chemistry</div>
+                                <div style="color: var(--text-secondary); font-size: 0.9rem;">días hasta LC Español</div>
                                 <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;" id="examDate">June 2025</div>
                             </div>
                         </div>
@@ -729,7 +729,7 @@
             <section class="section" id="topics">
                 <div class="section-header">
                     <h1 class="section-title">📚 Study Topics</h1>
-                    <p class="section-subtitle">Complete coverage of the LC Chemistry syllabus</p>
+                    <p class="section-subtitle">El programa completo de LC Español</p>
                 </div>
                 <div class="card-grid" id="topicsGrid"></div>
                 <div class="topic-view" id="topicView">
@@ -1003,7 +1003,7 @@
             <!-- Glossary -->
             <section class="section" id="glossary">
                 <div class="section-header">
-                    <h1 class="section-title">📖 Chemistry Glossary</h1>
+                    <h1 class="section-title">📖 Vocabulario Español</h1>
                     <p class="section-subtitle">Searchable definitions of key terms</p>
                 </div>
                 
@@ -2056,7 +2056,7 @@
         let userProgress = {};
         
         function loadProgress() {
-            userProgress = JSON.parse(localStorage.getItem('chemProgress') || '{}');
+            userProgress = JSON.parse(localStorage.getItem('espanolProgress') || '{}');
             // Update topics array with saved progress
             topics.forEach(topic => {
                 if (userProgress[topic.id]) {
@@ -2070,7 +2070,7 @@
             if (!userProgress[topicId]) userProgress[topicId] = {};
             userProgress[topicId].progress = progressValue;
             userProgress[topicId].lastViewed = Date.now();
-            localStorage.setItem('chemProgress', JSON.stringify(userProgress));
+            localStorage.setItem('espanolProgress', JSON.stringify(userProgress));
             
             // Update topic in array
             const topic = topics.find(t => t.id === topicId);
@@ -2106,7 +2106,7 @@
 
         // ==================== EXAM COUNTDOWN ====================
         function initExamCountdown() {
-            // LC Chemistry typically in June
+            // LC Spanish typically in June
             const examDate = new Date('2025-06-11'); // Approximate LC date
             const today = new Date();
             const diffTime = examDate - today;
