@@ -529,6 +529,13 @@
             font-size: 0.9rem;
         }
         .back-btn:hover { color: var(--accent-cyan); }
+        .topic-nav-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .topic-nav-header .back-btn { margin-bottom: 0; }
+        .lesson-progress-bar { flex: 1; min-width: 150px; height: 8px; background: var(--bg-tertiary); border-radius: 4px; overflow: hidden; }
+        .lesson-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green)); border-radius: 4px; transition: width 0.3s ease; }
+        .lesson-counter { font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap; }
+        .lesson-nav { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--glass-border); }
+        .lesson-nav .btn { min-width: 120px; }
         .topic-content {
             background: var(--glass);
             border: 1px solid var(--glass-border);
@@ -733,8 +740,16 @@
                 </div>
                 <div class="card-grid" id="topicsGrid"></div>
                 <div class="topic-view" id="topicView">
-                    <a class="back-btn" id="backToTopics">← Back to Topics</a>
+                    <div class="topic-nav-header">
+                        <a class="back-btn" id="backToTopics">← Volver</a>
+                        <div class="lesson-progress-bar"><div class="lesson-progress-fill" id="lessonProgressFill"></div></div>
+                        <span class="lesson-counter" id="lessonCounter">Lección 1 de 8</span>
+                    </div>
                     <div class="topic-content" id="topicContent"></div>
+                    <div class="lesson-nav">
+                        <button class="btn btn-secondary" id="prevLesson" disabled>← Anterior</button>
+                        <button class="btn btn-primary" id="nextLesson">Siguiente →</button>
+                    </div>
                 </div>
             </section>
 
@@ -1520,25 +1535,46 @@
                 </div>
             `).join('');
             document.querySelectorAll('.topic-card').forEach(card => { card.addEventListener('click', () => showTopicContent(card.dataset.topic)); });
-            document.getElementById('backToTopics').addEventListener('click', () => { document.getElementById('topicView').classList.remove('active'); document.getElementById('topicsGrid').style.display = 'grid'; });
+            document.getElementById('backToTopics').addEventListener('click', () => { document.getElementById('topicView').classList.remove('active'); document.getElementById('topicsGrid').style.display = 'grid'; currentTopicLessons = []; currentLessonIndex = 0; });
+            document.getElementById('prevLesson').addEventListener('click', () => navigateLesson(-1));
+            document.getElementById('nextLesson').addEventListener('click', () => navigateLesson(1));
         }
+
+        let currentTopicLessons = [], currentLessonIndex = 0, currentTopicId = null;
 
         function showTopicContent(topicId) {
             const topic = topics.find(t => t.id === topicId);
             if (!topic) return;
+            currentTopicId = topicId;
+            const content = topic.content, titleMatch = content.match(/<h2>([^<]+)<\/h2>/), topicTitle = titleMatch ? titleMatch[1] : topic.title;
+            const parts = content.split(/<h3>([^<]+)<\/h3>/g);
+            currentTopicLessons = [];
+            if (parts[0] && parts[0].trim()) currentTopicLessons.push({ title: topicTitle + ' - Introducción', content: parts[0] });
+            for (let i = 1; i < parts.length; i += 2) currentTopicLessons.push({ title: parts[i], content: `<h3>${parts[i]}</h3>${parts[i + 1] || ''}` });
+            if (currentTopicLessons.length === 0) currentTopicLessons.push({ title: topicTitle, content: content });
+            currentLessonIndex = 0;
             document.getElementById('topicsGrid').style.display = 'none';
-            document.getElementById('topicContent').innerHTML = topic.content;
             document.getElementById('topicView').classList.add('active');
-            
-            // Update progress - viewing a topic gives at least 25% progress
-            const currentProgress = topic.progress || 0;
-            if (currentProgress < 25) {
-                saveProgress(topicId, 25);
-            }
+            showCurrentLesson();
             addXP(10);
-            
-            // Refresh the topics grid to show updated progress
-            initTopics();
+        }
+
+        function showCurrentLesson() {
+            const lesson = currentTopicLessons[currentLessonIndex], total = currentTopicLessons.length, topic = topics.find(t => t.id === currentTopicId);
+            document.getElementById('topicContent').innerHTML = lesson.content;
+            document.getElementById('lessonProgressFill').style.width = ((currentLessonIndex + 1) / total * 100) + '%';
+            document.getElementById('lessonCounter').textContent = `Lección ${currentLessonIndex + 1} de ${total}`;
+            document.getElementById('prevLesson').disabled = currentLessonIndex === 0;
+            const nextBtn = document.getElementById('nextLesson');
+            if (currentLessonIndex === total - 1) { nextBtn.textContent = '✓ Completar'; nextBtn.style.background = 'var(--accent-green)'; nextBtn.style.color = 'white'; }
+            else { nextBtn.textContent = 'Siguiente →'; nextBtn.style.background = ''; nextBtn.style.color = ''; }
+            if (topic) { const p = Math.round(((currentLessonIndex + 1) / total) * 100); if (p > (topic.progress || 0)) { saveProgress(currentTopicId, p); initTopics(); } }
+        }
+
+        function navigateLesson(dir) {
+            const newIdx = currentLessonIndex + dir, total = currentTopicLessons.length;
+            if (newIdx >= 0 && newIdx < total) { currentLessonIndex = newIdx; showCurrentLesson(); addXP(5); document.getElementById('topicContent').scrollIntoView({ behavior: 'smooth' }); }
+            else if (newIdx >= total) { showNotification('🎉 ¡Tema Completado! +50 XP'); addXP(50); document.getElementById('topicView').classList.remove('active'); document.getElementById('topicsGrid').style.display = 'grid'; currentTopicLessons = []; currentLessonIndex = 0; }
         }
 
         // ==================== FLASHCARDS ====================
@@ -2103,6 +2139,7 @@
         
         function updateStats() { document.getElementById('streakCount').textContent = streak; document.getElementById('xpCount').textContent = xp; }
         function addXP(amount) { xp += amount; localStorage.setItem('xp', xp); updateStats(); }
+        function showNotification(msg) { const n = document.createElement('div'); n.style.cssText = 'position:fixed;top:80px;right:20px;background:linear-gradient(135deg,var(--accent-cyan),var(--accent-green));color:white;padding:1rem 1.5rem;border-radius:12px;z-index:1001;font-weight:500;box-shadow:0 4px 20px rgba(0,212,255,0.3);'; n.textContent = msg; document.body.appendChild(n); setTimeout(() => n.remove(), 3000); }
 
         // ==================== EXAM COUNTDOWN ====================
         function initExamCountdown() {
