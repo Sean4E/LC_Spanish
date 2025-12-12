@@ -1,0 +1,60 @@
+{
+  "name": "Espa\u00f1olMaster LC",
+  "full_name": "Irish Leaving Cert Spanish",
+  "emoji": "\ud83c\uddea\ud83c\uddf8",
+  "colors": {
+    "primary": "#ef4444",
+    "secondary": "#dc2626",
+    "accent": "#fbbf24"
+  },
+  "topics": [
+    {
+      "id": "vocab",
+      "icon": "\ud83d\udcda",
+      "title": "Vocabulario",
+      "desc": "Essential vocab, phrases, idioms"
+    },
+    {
+      "id": "grammar",
+      "icon": "\ud83d\udcd6",
+      "title": "Gram\u00e1tica",
+      "desc": "Verbs, tenses, subjunctive, pronouns"
+    },
+    {
+      "id": "reading",
+      "icon": "\ud83d\udcc4",
+      "title": "Comprensi\u00f3n",
+      "desc": "Reading comprehension, strategies"
+    },
+    {
+      "id": "writing",
+      "icon": "\u270d\ufe0f",
+      "title": "Escritura",
+      "desc": "Essays, letters, emails, compositions"
+    },
+    {
+      "id": "listening",
+      "icon": "\ud83d\udc42",
+      "title": "Escuchar",
+      "desc": "Listening skills, dictation, audio"
+    },
+    {
+      "id": "speaking",
+      "icon": "\ud83d\udcac",
+      "title": "Oral",
+      "desc": "Conversation, presentation, roleplay"
+    },
+    {
+      "id": "culture",
+      "icon": "\ud83c\udfad",
+      "title": "Cultura",
+      "desc": "Spanish culture, literature, geography"
+    },
+    {
+      "id": "tenses",
+      "icon": "\u23f0",
+      "title": "Tiempos Verbales",
+      "desc": "All verb tenses, conjugations"
+    }
+  ]
+}

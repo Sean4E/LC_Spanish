@@ -1,0 +1,31 @@
+{
+  "name": "Espa\u00f1olMaster LC - Irish Leaving Cert Spanish",
+  "short_name": "Espa\u00f1olMaster LC",
+  "description": "Interactive study app for Irish Leaving Cert Spanish with flashcards, quizzes, and more.",
+  "start_url": "/LC_SPANISH/",
+  "scope": "/LC_SPANISH/",
+  "display": "standalone",
+  "background_color": "#ef4444",
+  "theme_color": "#ef4444",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "education",
+    "productivity"
+  ],
+  "lang": "en",
+  "dir": "ltr"
+}

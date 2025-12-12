@@ -1,0 +1,2514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#0a0e14">
+    <meta name="description" content="EspañolMaster LC - Interactive Spanish Chemistry study app with flashcards, quizzes, periodic table, and more.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EspañolMaster LC">
+    <title>EspañolMaster LC | Irish Leaving Cert Spanish</title>
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon-192.svg">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e14;
+            --bg-secondary: #111820;
+            --bg-tertiary: #1a2230;
+            --glass: rgba(20, 30, 48, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-cyan: #ef4444;
+            --accent-magenta: #ff006e;
+            --accent-yellow: #ffbe0b;
+            --accent-green: #fbbf24;
+            --accent-purple: #dc2626;
+            --text-primary: #f0f4f8;
+            --text-secondary: #8899a6;
+            --text-muted: #5c6b7a;
+            --success: #00ff88;
+            --warning: #ffbe0b;
+            --error: #ff006e;
+            --radius: 16px;
+            --radius-sm: 8px;
+            --shadow-glow: 0 0 40px rgba(0, 212, 255, 0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { -webkit-tap-highlight-color: transparent; }
+        button, .btn, .nav-btn, .quick-action, .answer-option, .quiz-option { touch-action: manipulation; -webkit-touch-callout: none; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .bg-molecules {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .molecule {
+            position: absolute;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.3; }
+            25% { transform: translate(30px, -30px) rotate(90deg); opacity: 0.6; }
+            50% { transform: translate(-20px, 20px) rotate(180deg); opacity: 0.3; }
+            75% { transform: translate(20px, 40px) rotate(270deg); opacity: 0.5; }
+        }
+        .app-container { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+        .header {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0; z-index: 100;
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .logo { display: flex; align-items: center; gap: 0.75rem; }
+        .logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+        .logo-text {
+            font-weight: 700; font-size: 1.25rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--text-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .logo-sub { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .user-stats { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .stat-pill {
+            display: flex; align-items: center; gap: 0.5rem;
+            background: var(--bg-tertiary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .stat-pill .value { font-weight: 600; color: var(--accent-cyan); }
+        .nav-container {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--glass-border);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-cyan) var(--bg-tertiary);
+        }
+        .nav-container::-webkit-scrollbar { height: 4px; }
+        .nav-container::-webkit-scrollbar-track { background: var(--bg-tertiary); }
+        .nav-container::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 2px; }
+        .nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.5rem;
+        }
+        .nav-btn {
+            flex-shrink: 0;
+            padding: 0.75rem 1.25rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+        .nav-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+        .nav-btn.active { color: var(--accent-cyan); background: rgba(0, 212, 255, 0.1); }
+        .main { flex: 1; max-width: 1400px; margin: 0 auto; padding: 1.5rem; width: 100%; }
+        .section { display: none; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .section-header { margin-bottom: 1.5rem; }
+        .section-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .section-subtitle { color: var(--text-secondary); font-size: 1rem; }
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .card:hover { border-color: rgba(0, 212, 255, 0.3); box-shadow: var(--shadow-glow); }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        .progress-ring { width: 120px; height: 120px; margin: 0 auto 1rem; }
+        .progress-ring circle { fill: none; stroke-width: 8; }
+        .progress-ring .bg { stroke: var(--bg-tertiary); }
+        .progress-ring .progress {
+            stroke: var(--accent-cyan);
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        .progress-text { text-anchor: middle; dominant-baseline: middle; font-size: 1.5rem; font-weight: 700; fill: var(--text-primary); }
+        .quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .quick-action {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 1.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        .quick-action:hover { background: rgba(0, 212, 255, 0.1); border-color: var(--accent-cyan); transform: translateY(-2px); }
+        .quick-action .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .quick-action .label { font-weight: 500; font-size: 0.9rem; }
+        .topic-card { cursor: pointer; position: relative; overflow: hidden; }
+        .topic-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0;
+            width: 4px; height: 100%;
+            background: var(--accent-cyan);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .topic-card:hover::before { opacity: 1; }
+        .topic-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; }
+        .topic-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+        }
+        .topic-progress { font-size: 0.85rem; color: var(--accent-green); font-weight: 600; }
+        .topic-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .topic-desc { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; }
+        .topic-stats { display: flex; gap: 1rem; font-size: 0.8rem; color: var(--text-muted); }
+        .periodic-container { overflow-x: auto; padding-bottom: 1rem; }
+        .periodic-table { display: grid; grid-template-columns: repeat(18, minmax(42px, 1fr)); gap: 2px; min-width: 850px; }
+        .element {
+            aspect-ratio: 1;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+            padding: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 0.65rem;
+            position: relative;
+        }
+        .element:hover { transform: scale(1.2); z-index: 10; box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); }
+        .element .number { font-size: 0.5rem; color: var(--text-muted); position: absolute; top: 1px; left: 3px; }
+        .element .symbol { font-weight: 700; font-size: 0.9rem; font-family: 'Space Mono', monospace; }
+        .element .name { font-size: 0.4rem; color: var(--text-secondary); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
+        .element.alkali { background: rgba(255, 0, 110, 0.3); border-color: rgba(255, 0, 110, 0.5); }
+        .element.alkaline { background: rgba(255, 190, 11, 0.3); border-color: rgba(255, 190, 11, 0.5); }
+        .element.transition { background: rgba(0, 212, 255, 0.2); border-color: rgba(0, 212, 255, 0.4); }
+        .element.post-transition { background: rgba(131, 56, 236, 0.3); border-color: rgba(131, 56, 236, 0.5); }
+        .element.metalloid { background: rgba(0, 255, 136, 0.2); border-color: rgba(0, 255, 136, 0.4); }
+        .element.nonmetal { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
+        .element.halogen { background: rgba(0, 255, 200, 0.3); border-color: rgba(0, 255, 200, 0.5); }
+        .element.noble { background: rgba(100, 100, 255, 0.3); border-color: rgba(100, 100, 255, 0.5); }
+        .element-spacer { visibility: hidden; }
+        .periodic-legend { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; justify-content: center; }
+        .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.7rem; color: var(--text-secondary); }
+        .legend-color { width: 14px; height: 14px; border-radius: 3px; }
+        .modal-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center; justify-content: center;
+            padding: 1rem;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            max-width: 500px; width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .modal-close {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-close:hover { background: var(--error); color: white; }
+        .modal-body { padding: 1.5rem; }
+        .element-detail-header { display: flex; align-items: center; gap: 1.5rem; }
+        .element-big {
+            width: 80px; height: 80px;
+            border-radius: 12px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .element-big .symbol { font-size: 2rem; font-weight: 700; font-family: 'Space Mono', monospace; }
+        .element-big .number { font-size: 0.8rem; color: var(--text-secondary); }
+        .element-info h2 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+        .element-info p { color: var(--text-secondary); font-size: 0.9rem; }
+        .element-properties { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1.5rem; }
+        .property { background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius-sm); }
+        .property-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem; }
+        .property-value { font-size: 1.1rem; font-weight: 600; color: var(--accent-cyan); }
+        .flashcard-controls { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .control-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .control-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        select, input[type="text"], input[type="number"] {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.9rem;
+            min-width: 180px;
+        }
+        select:focus, input:focus { outline: none; border-color: var(--accent-cyan); }
+        .flashcard-area { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+        .flashcard { width: 100%; max-width: 600px; min-height: 280px; perspective: 1000px; cursor: pointer; }
+        .flashcard-inner {
+            position: relative; width: 100%; height: 280px;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+        .flashcard-front, .flashcard-back {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden;
+            border-radius: var(--radius);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        .flashcard-front { background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary)); border: 1px solid var(--glass-border); }
+        .flashcard-back {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(131, 56, 236, 0.1));
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            transform: rotateY(180deg);
+        }
+        .flashcard-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+        .flashcard-content { font-size: 1.2rem; line-height: 1.6; }
+        .flashcard-hint { font-size: 0.85rem; color: var(--text-muted); margin-top: auto; }
+        .flashcard-nav { display: flex; align-items: center; gap: 1rem; }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4); }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--glass-border); }
+        .btn-secondary:hover { border-color: var(--accent-cyan); }
+        .btn-icon { width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .card-counter { font-size: 0.9rem; color: var(--text-secondary); }
+        .rating-buttons { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .rating-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        .rating-btn.hard { background: rgba(255, 0, 110, 0.2); color: var(--error); border: 1px solid rgba(255, 0, 110, 0.3); }
+        .rating-btn.good { background: rgba(255, 190, 11, 0.2); color: var(--warning); border: 1px solid rgba(255, 190, 11, 0.3); }
+        .rating-btn.easy { background: rgba(0, 255, 136, 0.2); color: var(--success); border: 1px solid rgba(0, 255, 136, 0.3); }
+        .rating-btn:hover { transform: translateY(-2px); }
+        .quiz-setup { max-width: 600px; margin: 0 auto; }
+        .quiz-options { display: grid; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .quiz-option {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .quiz-option:hover { border-color: var(--accent-cyan); }
+        .quiz-option.selected { border-color: var(--accent-cyan); background: rgba(0, 212, 255, 0.1); }
+        .quiz-area { max-width: 800px; margin: 0 auto; }
+        .quiz-progress { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .progress-bar { flex: 1; height: 8px; background: var(--bg-tertiary); border-radius: 4px; overflow: hidden; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .quiz-question {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .question-number { font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 0.5rem; }
+        .question-text { font-size: 1.15rem; line-height: 1.6; margin-bottom: 1.5rem; }
+        .answers { display: grid; gap: 0.75rem; }
+        .answer-option {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .answer-option:hover:not(.disabled) { border-color: var(--accent-cyan); background: rgba(0, 212, 255, 0.05); }
+        .answer-option.selected { border-color: var(--accent-cyan); background: rgba(0, 212, 255, 0.1); }
+        .answer-option.correct { border-color: var(--success); background: rgba(0, 255, 136, 0.1); }
+        .answer-option.incorrect { border-color: var(--error); background: rgba(255, 0, 110, 0.1); }
+        .answer-letter {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .answer-option.selected .answer-letter { background: var(--accent-cyan); color: var(--bg-primary); }
+        .answer-option.correct .answer-letter { background: var(--success); color: var(--bg-primary); }
+        .answer-option.incorrect .answer-letter { background: var(--error); color: white; }
+        .explanation {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-left: 3px solid var(--accent-cyan);
+        }
+        .explanation-title { font-weight: 600; color: var(--accent-cyan); margin-bottom: 0.5rem; }
+        .quiz-results { text-align: center; padding: 2rem; }
+        .results-score {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        .results-label { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 2rem; }
+        .calculator-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+        .calc-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+        .calc-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .calc-form { display: flex; flex-direction: column; gap: 1rem; }
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .input-group label { font-size: 0.85rem; color: var(--text-secondary); }
+        .calc-result { background: var(--bg-secondary); border-radius: var(--radius-sm); padding: 1rem; margin-top: 1rem; }
+        .calc-result-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .calc-result-value { font-size: 1.5rem; font-weight: 700; color: var(--accent-cyan); font-family: 'Space Mono', monospace; }
+        .formula-categories { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .formula-cat-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .formula-cat-btn:hover, .formula-cat-btn.active { background: rgba(0, 212, 255, 0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .formula-list { display: grid; gap: 1rem; }
+        .formula-item {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+        }
+        .formula-name { font-weight: 600; margin-bottom: 0.75rem; color: var(--accent-cyan); }
+        .formula-equation {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.2rem;
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+        .formula-desc { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; }
+        .formula-vars { margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted); }
+        .experiment-card { position: relative; overflow: hidden; }
+        .experiment-badge {
+            position: absolute; top: 1rem; right: 1rem;
+            background: var(--accent-purple);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .experiment-image {
+            width: 100%; height: 120px;
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+            border-radius: var(--radius-sm);
+            margin-bottom: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem;
+        }
+        .mindmap-container { overflow: auto; }
+        .mindmap-container svg { display: block; margin: 0 auto; }
+        .mindmap-node { cursor: pointer; transition: all 0.3s ease; }
+        .mindmap-node:hover { filter: brightness(1.2); }
+        .mindmap-node circle { transition: all 0.3s ease; }
+        .mindmap-node:hover circle { stroke-width: 3; }
+        .mindmap-node text { pointer-events: none; font-family: 'DM Sans', sans-serif; font-size: 11px; fill: var(--text-primary); }
+        .mindmap-link { stroke: rgba(0, 212, 255, 0.3); stroke-width: 2; fill: none; }
+        .mindmap-center text { font-size: 14px; font-weight: 600; }
+        .topic-view { display: none; }
+        .topic-view.active { display: block; }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .back-btn:hover { color: var(--accent-cyan); }
+        .topic-content {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 2rem;
+        }
+        .topic-content h2 { font-size: 1.5rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border); }
+        .topic-content h3 { font-size: 1.2rem; margin: 1.5rem 0 1rem; color: var(--accent-cyan); }
+        .topic-content p { line-height: 1.7; margin-bottom: 1rem; color: var(--text-secondary); }
+        .topic-content ul, .topic-content ol { margin: 1rem 0; padding-left: 1.5rem; }
+        .topic-content li { margin-bottom: 0.5rem; line-height: 1.6; color: var(--text-secondary); }
+        .key-point {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 1rem;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin: 1rem 0;
+        }
+        .key-point-title { font-weight: 600; color: var(--accent-cyan); margin-bottom: 0.5rem; }
+        .example-box { background: var(--bg-tertiary); border-radius: var(--radius-sm); padding: 1.25rem; margin: 1rem 0; }
+        .example-title { font-weight: 600; margin-bottom: 0.75rem; color: var(--accent-yellow); }
+        .balanced-result .coefficient { color: var(--accent-cyan); font-weight: 700; }
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; align-items: flex-start; }
+            .user-stats { width: 100%; justify-content: flex-start; }
+            .stat-pill { font-size: 0.75rem; padding: 0.4rem 0.75rem; }
+            .main { padding: 1rem; }
+            .section-title { font-size: 1.4rem; }
+            .card-grid { grid-template-columns: 1fr; }
+            .quick-actions { grid-template-columns: 1fr; }
+            .element-properties { grid-template-columns: 1fr; }
+            .flashcard-inner { height: 250px; }
+            .calculator-grid { grid-template-columns: 1fr; }
+            /* Grid navigation for tablets */
+            .nav-container { overflow-x: visible; }
+            .nav { flex-wrap: wrap; justify-content: center; gap: 0.35rem; }
+            .nav-btn { padding: 0.6rem 1rem; font-size: 0.85rem; }
+        }
+        @media (max-width: 480px) {
+            /* Compact grid nav for mobile */
+            .nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.25rem; padding: 0.4rem; }
+            .nav-btn {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.7rem;
+                flex-direction: column;
+                gap: 0.2rem;
+                justify-content: center;
+                text-align: center;
+            }
+            .nav-btn .icon { font-size: 1.1rem; }
+            .nav-btn span:not(.icon) { font-size: 0.6rem; display: block; line-height: 1.1; }
+            .flashcard-controls { flex-direction: column; }
+            select, input[type="text"], input[type="number"] { min-width: 100%; }
+            .header { padding: 0.75rem 1rem; }
+            .logo-text { font-size: 1.1rem; }
+            .section-title { font-size: 1.25rem; }
+            .modal { margin: 0.5rem; max-height: 95vh; }
+            .quiz-question { padding: 1.25rem; }
+            .flashcard-inner { height: 220px; }
+            .flashcard-content { font-size: 1rem; }
+            .btn { padding: 0.65rem 1.25rem; font-size: 0.85rem; }
+            .results-score { font-size: 3rem; }
+            .periodic-table { min-width: 750px; }
+            .element { font-size: 0.55rem; }
+            .element .symbol { font-size: 0.75rem; }
+            .mindmap-container svg { height: 450px; }
+        }
+        @media (max-width: 360px) {
+            .nav { grid-template-columns: repeat(3, 1fr); }
+            .nav-btn span:not(.icon) { font-size: 0.55rem; }
+            .header-content { gap: 0.5rem; }
+            .stat-pill { padding: 0.35rem 0.6rem; font-size: 0.7rem; }
+            .section-title { font-size: 1.1rem; }
+            .card { padding: 1rem; }
+            .topic-icon { width: 40px; height: 40px; font-size: 1.2rem; }
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <div class="bg-molecules" id="bgMolecules"></div>
+    <div class="app-container">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="icon-192.svg" alt="EspañolMaster LC" class="logo-icon" style="width: 40px; height: 40px; border-radius: 10px;">
+                    <div>
+                        <div class="logo-text">EspañolMaster LC</div>
+                        <div class="logo-sub">Spanish</div>
+                    </div>
+                </div>
+                <div class="user-stats">
+                    <div class="stat-pill"><span class="icon">🔥</span><span class="value" id="streakCount">0</span><span>day streak</span></div>
+                    <div class="stat-pill"><span class="icon">⭐</span><span class="value" id="xpCount">0</span><span>XP</span></div>
+                </div>
+            </div>
+        </header>
+        <div class="nav-container">
+            <nav class="nav">
+                <button class="nav-btn active" data-section="dashboard"><span class="icon">📊</span><span>Dashboard</span></button>
+                <button class="nav-btn" data-section="topics"><span class="icon">📚</span><span>Topics</span></button>
+                <button class="nav-btn" data-section="periodic"><span class="icon">⚛️</span><span>Periodic Table</span></button>
+                <button class="nav-btn" data-section="flashcards"><span class="icon">🃏</span><span>Flashcards</span></button>
+                <button class="nav-btn" data-section="quiz"><span class="icon">❓</span><span>Quiz</span></button>
+                <button class="nav-btn" data-section="calculator"><span class="icon">🧮</span><span>Calculators</span></button>
+                <button class="nav-btn" data-section="formulas"><span class="icon">📐</span><span>Formulas</span></button>
+                <button class="nav-btn" data-section="mindmaps"><span class="icon">🧠</span><span>Mind Maps</span></button>
+                <button class="nav-btn" data-section="experiments"><span class="icon">🧪</span><span>Experiments</span></button>
+                <button class="nav-btn" data-section="dataTables"><span class="icon">📋</span><span>Data Tables</span></button>
+                <button class="nav-btn" data-section="glossary"><span class="icon">📖</span><span>Glossary</span></button>
+                <button class="nav-btn" data-section="examMode"><span class="icon">🎯</span><span>Exam Mode</span></button>
+            </nav>
+        </div>
+        <main class="main">
+            <!-- Dashboard -->
+            <section class="section active" id="dashboard">
+                <div class="section-header">
+                    <h1 class="section-title">Welcome back! 👋</h1>
+                    <p class="section-subtitle">Continue your chemistry journey</p>
+                </div>
+                <div class="dashboard-grid">
+                    <div>
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <h3 style="margin-bottom: 1rem;">Quick Actions</h3>
+                            <div class="quick-actions">
+                                <a class="quick-action" data-goto="flashcards"><span class="icon">🃏</span><span class="label">Daily Review</span></a>
+                                <a class="quick-action" data-goto="quiz"><span class="icon">❓</span><span class="label">Practice Quiz</span></a>
+                                <a class="quick-action" data-goto="mindmaps"><span class="icon">🧠</span><span class="label">Mind Maps</span></a>
+                                <a class="quick-action" data-goto="calculator"><span class="icon">🧮</span><span class="label">Calculators</span></a>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;">Continue Learning</h3>
+                            <div id="recentTopics"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <h3 style="margin-bottom: 1rem; text-align: center;">Overall Progress</h3>
+                            <svg class="progress-ring" viewBox="0 0 120 120">
+                                <circle class="bg" cx="60" cy="60" r="52"/>
+                                <circle class="progress" cx="60" cy="60" r="52" stroke-dasharray="327" stroke-dashoffset="327" id="progressCircle"/>
+                                <text class="progress-text" x="60" y="60" id="progressPercent">0%</text>
+                            </svg>
+                            <div style="text-align: center; color: var(--text-secondary); font-size: 0.9rem;">
+                                <span id="topicsCompleted">0</span> of <span id="totalTopics">10</span> topics started
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;">Today's Goals</h3>
+                            <div id="dailyGoals">
+                                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: var(--radius-sm); margin-bottom: 0.5rem;">
+                                    <input type="checkbox" id="goal1" style="width: 18px; height: 18px;">
+                                    <label for="goal1" style="flex: 1; font-size: 0.9rem;">Complete 10 flashcards</label>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: var(--radius-sm); margin-bottom: 0.5rem;">
+                                    <input type="checkbox" id="goal2" style="width: 18px; height: 18px;">
+                                    <label for="goal2" style="flex: 1; font-size: 0.9rem;">Pass one quiz</label>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: var(--radius-sm);">
+                                    <input type="checkbox" id="goal3" style="width: 18px; height: 18px;">
+                                    <label for="goal3" style="flex: 1; font-size: 0.9rem;">Study for 30 minutes</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="margin-top: 1.5rem;">
+                            <h3 style="margin-bottom: 1rem; text-align: center;">⏰ Exam Countdown</h3>
+                            <div id="examCountdown" style="text-align: center;">
+                                <div style="font-size: 2.5rem; font-weight: 700; color: var(--accent-cyan);" id="daysUntilExam">--</div>
+                                <div style="color: var(--text-secondary); font-size: 0.9rem;">days until LC Chemistry</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;" id="examDate">June 2025</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="margin-top: 1.5rem;">
+                            <h3 style="margin-bottom: 1rem; text-align: center;">🍅 Pomodoro Timer</h3>
+                            <div style="text-align: center;">
+                                <div style="font-size: 3rem; font-weight: 700; font-family: 'Space Mono', monospace; color: var(--text-primary);" id="pomodoroDisplay">25:00</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;" id="pomodoroStatus">Focus Time</div>
+                                <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                    <button class="btn btn-primary" id="pomodoroStart" onclick="togglePomodoro()">Start</button>
+                                    <button class="btn btn-secondary" onclick="resetPomodoro()">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Topics -->
+            <section class="section" id="topics">
+                <div class="section-header">
+                    <h1 class="section-title">📚 Study Topics</h1>
+                    <p class="section-subtitle">Complete coverage of the LC Chemistry syllabus</p>
+                </div>
+                <div class="card-grid" id="topicsGrid"></div>
+                <div class="topic-view" id="topicView">
+                    <a class="back-btn" id="backToTopics">← Back to Topics</a>
+                    <div class="topic-content" id="topicContent"></div>
+                </div>
+            </section>
+
+            <!-- Periodic Table -->
+            <section class="section" id="periodic">
+                <div class="section-header">
+                    <h1 class="section-title">⚛️ Interactive Periodic Table</h1>
+                    <p class="section-subtitle">Click any element to learn more</p>
+                </div>
+                <div class="card">
+                    <div class="periodic-container">
+                        <div class="periodic-table" id="periodicTable"></div>
+                    </div>
+                    <div class="periodic-legend">
+                        <div class="legend-item"><div class="legend-color" style="background: rgba(255, 0, 110, 0.3);"></div>Alkali</div>
+                        <div class="legend-item"><div class="legend-color" style="background: rgba(255, 190, 11, 0.3);"></div>Alkaline Earth</div>
+                        <div class="legend-item"><div class="legend-color" style="background: rgba(0, 212, 255, 0.2);"></div>Transition</div>
+                        <div class="legend-item"><div class="legend-color" style="background: rgba(131, 56, 236, 0.3);"></div>Post-Trans</div>
+                        <div class="legend-item"><div class="legend-color" style="background: rgba(0, 255, 136, 0.2);"></div>Metalloid</div>
+                        <div class="legend-item"><div class="legend-color" style="background: rgba(255, 255, 255, 0.1);"></div>Nonmetal</div>
+                        <div class="legend-item"><div class="legend-color" style="background: rgba(0, 255, 200, 0.3);"></div>Halogen</div>
+                        <div class="legend-item"><div class="legend-color" style="background: rgba(100, 100, 255, 0.3);"></div>Noble Gas</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Flashcards -->
+            <section class="section" id="flashcards">
+                <div class="section-header">
+                    <h1 class="section-title">🃏 Flashcards</h1>
+                    <p class="section-subtitle">Master key concepts with spaced repetition</p>
+                </div>
+                <div class="card">
+                    <div class="flashcard-controls">
+                        <div class="control-group">
+                            <span class="control-label">Topic</span>
+                            <select id="flashcardTopic">
+                                <option value="all">All Topics</option>
+                                <option value="atomic">Atomic Structure</option>
+                                <option value="bonding">Chemical Bonding</option>
+                                <option value="stoichiometry">Stoichiometry</option>
+                                <option value="organic">Organic Chemistry</option>
+                                <option value="acids">Acids & Bases</option>
+                                <option value="redox">Electrochemistry</option>
+                                <option value="rates">Rates & Equilibrium</option>
+                            </select>
+                        </div>
+                        <div style="margin-left: auto;">
+                            <button class="btn btn-primary" id="startFlashcards">Start Session</button>
+                        </div>
+                    </div>
+                    <div class="flashcard-area" id="flashcardArea">
+                        <div class="flashcard" id="flashcard">
+                            <div class="flashcard-inner">
+                                <div class="flashcard-front">
+                                    <div class="flashcard-label">Question</div>
+                                    <div class="flashcard-content" id="flashcardQuestion">Select a topic and click "Start Session" to begin</div>
+                                    <div class="flashcard-hint">Click to flip</div>
+                                </div>
+                                <div class="flashcard-back">
+                                    <div class="flashcard-label">Answer</div>
+                                    <div class="flashcard-content" id="flashcardAnswer">The answer will appear here</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flashcard-nav">
+                            <button class="btn btn-secondary btn-icon" id="prevCard" disabled>←</button>
+                            <span class="card-counter"><span id="currentCard">0</span> / <span id="totalCards">0</span></span>
+                            <button class="btn btn-secondary btn-icon" id="nextCard" disabled>→</button>
+                        </div>
+                        <div class="rating-buttons" id="ratingButtons" style="display: none;">
+                            <button class="rating-btn hard">😓 Hard</button>
+                            <button class="rating-btn good">👍 Good</button>
+                            <button class="rating-btn easy">🌟 Easy</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quiz -->
+            <section class="section" id="quiz">
+                <div class="section-header">
+                    <h1 class="section-title">❓ Practice Quiz</h1>
+                    <p class="section-subtitle">Test your knowledge with exam-style questions</p>
+                </div>
+                <div class="quiz-setup" id="quizSetup">
+                    <div class="card">
+                        <h3 style="margin-bottom: 1rem;">Select Topic</h3>
+                        <div class="quiz-options" id="quizTopicOptions"></div>
+                        <h3 style="margin-bottom: 1rem; margin-top: 1.5rem;">Number of Questions</h3>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="quiz-option selected" data-questions="5">5 Questions</button>
+                            <button class="quiz-option" data-questions="10">10 Questions</button>
+                            <button class="quiz-option" data-questions="20">20 Questions</button>
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;" id="startQuiz">Start Quiz</button>
+                    </div>
+                </div>
+                <div class="quiz-area" id="quizArea" style="display: none;">
+                    <div class="quiz-progress">
+                        <span id="quizQuestionNum">1/10</span>
+                        <div class="progress-bar"><div class="progress-fill" id="quizProgressBar" style="width: 10%;"></div></div>
+                        <span id="quizScore">Score: 0</span>
+                    </div>
+                    <div class="quiz-question" id="quizQuestionArea"></div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <button class="btn btn-secondary" id="quitQuiz">Quit</button>
+                        <button class="btn btn-primary" id="nextQuestion" style="display: none;">Next Question →</button>
+                    </div>
+                </div>
+                <div class="quiz-results card" id="quizResults" style="display: none;">
+                    <h2 style="margin-bottom: 1rem;">Quiz Complete! 🎉</h2>
+                    <div class="results-score" id="finalScore">80%</div>
+                    <div class="results-label" id="finalScoreLabel">8 out of 10 correct</div>
+                    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+                        <button class="btn btn-primary" id="retakeQuiz">Try Again</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Calculator -->
+            <section class="section" id="calculator">
+                <div class="section-header">
+                    <h1 class="section-title">🧮 Chemistry Calculators</h1>
+                    <p class="section-subtitle">Essential tools for solving chemistry problems</p>
+                </div>
+                <div class="calculator-grid">
+                    <div class="calc-card">
+                        <h3 class="calc-title">⚖️ Mole Calculator</h3>
+                        <div class="calc-form">
+                            <div class="input-group"><label>Mass (g)</label><input type="number" id="moleMass" placeholder="Enter mass"></div>
+                            <div class="input-group"><label>Molar Mass (g/mol)</label><input type="number" id="moleMolarMass" placeholder="Enter molar mass"></div>
+                            <button class="btn btn-primary" onclick="calculateMoles()">Calculate</button>
+                            <div class="calc-result"><div class="calc-result-label">Number of Moles</div><div class="calc-result-value" id="moleResult">—</div></div>
+                        </div>
+                    </div>
+                    <div class="calc-card">
+                        <h3 class="calc-title">🧪 Concentration Calculator</h3>
+                        <div class="calc-form">
+                            <div class="input-group"><label>Number of Moles (mol)</label><input type="number" id="concMoles" placeholder="Enter moles"></div>
+                            <div class="input-group"><label>Volume (L)</label><input type="number" id="concVolume" placeholder="Enter volume"></div>
+                            <button class="btn btn-primary" onclick="calculateConcentration()">Calculate</button>
+                            <div class="calc-result"><div class="calc-result-label">Concentration (M)</div><div class="calc-result-value" id="concResult">—</div></div>
+                        </div>
+                    </div>
+                    <div class="calc-card">
+                        <h3 class="calc-title">💧 Dilution (C₁V₁ = C₂V₂)</h3>
+                        <div class="calc-form">
+                            <div class="input-group"><label>Initial Concentration (M)</label><input type="number" id="dilC1" placeholder="C₁"></div>
+                            <div class="input-group"><label>Initial Volume (mL)</label><input type="number" id="dilV1" placeholder="V₁"></div>
+                            <div class="input-group"><label>Final Concentration (M)</label><input type="number" id="dilC2" placeholder="C₂"></div>
+                            <button class="btn btn-primary" onclick="calculateDilution()">Calculate V₂</button>
+                            <div class="calc-result"><div class="calc-result-label">Final Volume (mL)</div><div class="calc-result-value" id="dilResult">—</div></div>
+                        </div>
+                    </div>
+                    <div class="calc-card">
+                        <h3 class="calc-title">📊 pH Calculator</h3>
+                        <div class="calc-form">
+                            <div class="input-group"><label>[H⁺] Concentration (M)</label><input type="number" id="phConc" placeholder="e.g., 0.001" step="any"></div>
+                            <button class="btn btn-primary" onclick="calculatePH()">Calculate pH</button>
+                            <div class="calc-result"><div class="calc-result-label">pH Value</div><div class="calc-result-value" id="phResult">—</div></div>
+                        </div>
+                    </div>
+                    <div class="calc-card">
+                        <h3 class="calc-title">💨 Ideal Gas Law (PV = nRT)</h3>
+                        <div class="calc-form">
+                            <div class="input-group"><label>Pressure (atm)</label><input type="number" id="gasP" placeholder="P"></div>
+                            <div class="input-group"><label>Volume (L)</label><input type="number" id="gasV" placeholder="V"></div>
+                            <div class="input-group"><label>Temperature (K)</label><input type="number" id="gasT" placeholder="T"></div>
+                            <button class="btn btn-primary" onclick="calculateGas()">Calculate n</button>
+                            <div class="calc-result"><div class="calc-result-label">Moles of Gas (n)</div><div class="calc-result-value" id="gasResult">—</div></div>
+                        </div>
+                    </div>
+                    <div class="calc-card">
+                        <h3 class="calc-title">⚗️ Molar Mass Calculator</h3>
+                        <div class="calc-form">
+                            <div class="input-group"><label>Chemical Formula</label><input type="text" id="molarFormula" placeholder="e.g., H2SO4, NaCl"></div>
+                            <button class="btn btn-primary" onclick="calculateMolarMass()">Calculate</button>
+                            <div class="calc-result"><div class="calc-result-label">Molar Mass</div><div class="calc-result-value" id="molarMassResult">—</div></div>
+                            <div id="molarMassBreakdown" style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary);"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Formulas -->
+            <section class="section" id="formulas">
+                <div class="section-header">
+                    <h1 class="section-title">📐 Formula Reference</h1>
+                    <p class="section-subtitle">All the formulas you need for the LC Chemistry exam</p>
+                </div>
+                <div class="formula-categories">
+                    <button class="formula-cat-btn active" data-category="all">All</button>
+                    <button class="formula-cat-btn" data-category="stoich">Stoichiometry</button>
+                    <button class="formula-cat-btn" data-category="gas">Gas Laws</button>
+                    <button class="formula-cat-btn" data-category="acids">Acids & Bases</button>
+                    <button class="formula-cat-btn" data-category="thermo">Thermochemistry</button>
+                    <button class="formula-cat-btn" data-category="rates">Rates</button>
+                    <button class="formula-cat-btn" data-category="redox">Electrochemistry</button>
+                </div>
+                <div class="formula-list" id="formulaList"></div>
+            </section>
+
+            <!-- Mind Maps -->
+            <section class="section" id="mindmaps">
+                <div class="section-header">
+                    <h1 class="section-title">🧠 Mind Maps</h1>
+                    <p class="section-subtitle">Visual concept maps for each topic - click nodes to explore</p>
+                </div>
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="control-group">
+                        <span class="control-label">Select Topic</span>
+                        <select id="mindmapTopic" onchange="renderMindMap(this.value)">
+                            <option value="atomic">Atomic Structure</option>
+                            <option value="bonding">Chemical Bonding</option>
+                            <option value="stoichiometry">Stoichiometry & The Mole</option>
+                            <option value="organic">Organic Chemistry</option>
+                            <option value="acids">Acids & Bases</option>
+                            <option value="redox">Electrochemistry</option>
+                            <option value="rates">Rates & Equilibrium</option>
+                            <option value="gases">Gases</option>
+                            <option value="thermo">Thermochemistry</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="mindmap-container" id="mindmapContainer">
+                        <svg id="mindmapSvg" width="100%" height="600" viewBox="0 0 1000 600"></svg>
+                    </div>
+                    <div class="mindmap-info" id="mindmapInfo" style="margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: var(--radius-sm); display: none;">
+                        <h4 id="mindmapInfoTitle" style="color: var(--accent-cyan); margin-bottom: 0.5rem;"></h4>
+                        <p id="mindmapInfoDesc" style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;"></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Experiments -->
+            <section class="section" id="experiments">
+                <div class="section-header">
+                    <h1 class="section-title">🧪 Mandatory Experiments</h1>
+                    <p class="section-subtitle">Step-by-step guides for all required practicals</p>
+                </div>
+                <div class="card-grid" id="experimentsGrid"></div>
+            </section>
+
+            <!-- Data Tables -->
+            <section class="section" id="dataTables">
+                <div class="section-header">
+                    <h1 class="section-title">📋 Data Tables</h1>
+                    <p class="section-subtitle">Essential reference data for calculations and exams</p>
+                </div>
+                
+                <div class="formula-categories">
+                    <button class="formula-cat-btn active" data-table="electrochemical">Electrochemical Series</button>
+                    <button class="formula-cat-btn" data-table="bondEnergies">Bond Energies</button>
+                    <button class="formula-cat-btn" data-table="enthalpies">Enthalpies</button>
+                    <button class="formula-cat-btn" data-table="constants">Constants</button>
+                    <button class="formula-cat-btn" data-table="indicators">Indicators</button>
+                </div>
+                
+                <div class="card">
+                    <div id="dataTableContent"></div>
+                </div>
+            </section>
+
+            <!-- Glossary -->
+            <section class="section" id="glossary">
+                <div class="section-header">
+                    <h1 class="section-title">📖 Chemistry Glossary</h1>
+                    <p class="section-subtitle">Searchable definitions of key terms</p>
+                </div>
+                
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="input-group">
+                        <input type="text" id="glossarySearch" placeholder="Search terms..." oninput="filterGlossary(this.value)" style="width: 100%;">
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                        <button class="formula-cat-btn active" data-glossary="all" onclick="filterGlossaryCategory('all')">All</button>
+                        <button class="formula-cat-btn" data-glossary="atomic" onclick="filterGlossaryCategory('atomic')">Atomic</button>
+                        <button class="formula-cat-btn" data-glossary="bonding" onclick="filterGlossaryCategory('bonding')">Bonding</button>
+                        <button class="formula-cat-btn" data-glossary="organic" onclick="filterGlossaryCategory('organic')">Organic</button>
+                        <button class="formula-cat-btn" data-glossary="acids" onclick="filterGlossaryCategory('acids')">Acids/Bases</button>
+                        <button class="formula-cat-btn" data-glossary="redox" onclick="filterGlossaryCategory('redox')">Redox</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div id="glossaryContent"></div>
+                </div>
+            </section>
+
+            <!-- Exam Mode -->
+            <section class="section" id="examMode">
+                <div class="section-header">
+                    <h1 class="section-title">🎯 Exam Mode</h1>
+                    <p class="section-subtitle">Timed practice under exam conditions</p>
+                </div>
+                
+                <div id="examSetup">
+                    <div class="card" style="max-width: 600px; margin: 0 auto;">
+                        <h3 style="margin-bottom: 1.5rem; text-align: center;">Configure Your Exam</h3>
+                        
+                        <div class="input-group" style="margin-bottom: 1rem;">
+                            <label>Exam Type</label>
+                            <select id="examType" style="width: 100%;">
+                                <option value="mixed">Mixed Questions (All Topics)</option>
+                                <option value="section-a">Section A Style (Short Questions)</option>
+                                <option value="section-b">Section B Style (Long Questions)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group" style="margin-bottom: 1rem;">
+                            <label>Difficulty Level</label>
+                            <select id="examLevel" style="width: 100%;">
+                                <option value="higher">Higher Level</option>
+                                <option value="ordinary">Ordinary Level</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group" style="margin-bottom: 1rem;">
+                            <label>Time Limit</label>
+                            <select id="examTime" style="width: 100%;">
+                                <option value="15">15 minutes (Quick Practice)</option>
+                                <option value="30">30 minutes (Half Exam)</option>
+                                <option value="60">60 minutes (Full Practice)</option>
+                                <option value="0">No Time Limit</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group" style="margin-bottom: 1.5rem;">
+                            <label>Number of Questions</label>
+                            <select id="examQuestions" style="width: 100%;">
+                                <option value="10">10 Questions</option>
+                                <option value="20">20 Questions</option>
+                                <option value="30">30 Questions</option>
+                            </select>
+                        </div>
+                        
+                        <div style="background: var(--bg-tertiary); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.5rem;">
+                            <h4 style="color: var(--accent-yellow); margin-bottom: 0.5rem;">⚠️ Exam Conditions</h4>
+                            <ul style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; padding-left: 1.25rem;">
+                                <li>Timer will count down (if enabled)</li>
+                                <li>Cannot go back to previous questions</li>
+                                <li>No hints or explanations until the end</li>
+                                <li>Results shown only after completion</li>
+                            </ul>
+                        </div>
+                        
+                        <button class="btn btn-primary" style="width: 100%;" onclick="startExamMode()">🎯 Start Exam</button>
+                    </div>
+                </div>
+                
+                <div id="examInProgress" style="display: none;">
+                    <div class="card" style="max-width: 800px; margin: 0 auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border);">
+                            <div>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">Question</span>
+                                <div style="font-size: 1.25rem; font-weight: 600;" id="examQuestionNum">1 of 20</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">Time Remaining</span>
+                                <div style="font-size: 1.5rem; font-weight: 700; font-family: 'Space Mono', monospace; color: var(--accent-cyan);" id="examTimer">30:00</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">Answered</span>
+                                <div style="font-size: 1.25rem; font-weight: 600;" id="examAnswered">0 / 20</div>
+                            </div>
+                        </div>
+                        
+                        <div id="examQuestionContent"></div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
+                            <button class="btn btn-secondary" onclick="endExamEarly()">End Exam</button>
+                            <button class="btn btn-primary" id="examNextBtn" onclick="nextExamQuestion()">Next Question →</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="examResults" style="display: none;">
+                    <div class="card" style="max-width: 600px; margin: 0 auto; text-align: center;">
+                        <h2 style="margin-bottom: 1rem;">📊 Exam Results</h2>
+                        <div class="results-score" id="examFinalScore">75%</div>
+                        <div class="results-label" id="examScoreLabel">15 out of 20 correct</div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 2rem 0;">
+                            <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius-sm);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-green);" id="examCorrectCount">15</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Correct</div>
+                            </div>
+                            <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius-sm);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-magenta);" id="examWrongCount">5</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Incorrect</div>
+                            </div>
+                            <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius-sm);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-cyan);" id="examTimeSpent">24:32</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Time Taken</div>
+                            </div>
+                        </div>
+                        
+                        <div id="examGrade" style="background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
+                            <div style="font-size: 0.9rem; opacity: 0.8;">Predicted Grade</div>
+                            <div style="font-size: 2.5rem; font-weight: 700;">H2</div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem; justify-content: center;">
+                            <button class="btn btn-secondary" onclick="reviewExamAnswers()">Review Answers</button>
+                            <button class="btn btn-primary" onclick="resetExamMode()">Try Again</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Element Modal -->
+    <div class="modal-overlay" id="elementModal">
+        <div class="modal">
+            <div class="modal-header"><h3>Element Details</h3><button class="modal-close" id="closeModal">×</button></div>
+            <div class="modal-body" id="elementModalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATA ====================
+        const elements = [
+            { number: 1, symbol: 'H', name: 'Hydrogen', mass: 1.008, category: 'nonmetal', group: 1, period: 1, electronConfig: '1s¹', electronegativity: 2.20 },
+            { number: 2, symbol: 'He', name: 'Helium', mass: 4.003, category: 'noble', group: 18, period: 1, electronConfig: '1s²' },
+            { number: 3, symbol: 'Li', name: 'Lithium', mass: 6.941, category: 'alkali', group: 1, period: 2, electronConfig: '[He] 2s¹', electronegativity: 0.98 },
+            { number: 4, symbol: 'Be', name: 'Beryllium', mass: 9.012, category: 'alkaline', group: 2, period: 2, electronConfig: '[He] 2s²', electronegativity: 1.57 },
+            { number: 5, symbol: 'B', name: 'Boron', mass: 10.81, category: 'metalloid', group: 13, period: 2 },
+            { number: 6, symbol: 'C', name: 'Carbon', mass: 12.01, category: 'nonmetal', group: 14, period: 2, electronConfig: '[He] 2s² 2p²', electronegativity: 2.55 },
+            { number: 7, symbol: 'N', name: 'Nitrogen', mass: 14.01, category: 'nonmetal', group: 15, period: 2, electronConfig: '[He] 2s² 2p³', electronegativity: 3.04 },
+            { number: 8, symbol: 'O', name: 'Oxygen', mass: 16.00, category: 'nonmetal', group: 16, period: 2, electronConfig: '[He] 2s² 2p⁴', electronegativity: 3.44 },
+            { number: 9, symbol: 'F', name: 'Fluorine', mass: 19.00, category: 'halogen', group: 17, period: 2, electronConfig: '[He] 2s² 2p⁵', electronegativity: 3.98 },
+            { number: 10, symbol: 'Ne', name: 'Neon', mass: 20.18, category: 'noble', group: 18, period: 2 },
+            { number: 11, symbol: 'Na', name: 'Sodium', mass: 22.99, category: 'alkali', group: 1, period: 3, electronConfig: '[Ne] 3s¹', electronegativity: 0.93 },
+            { number: 12, symbol: 'Mg', name: 'Magnesium', mass: 24.31, category: 'alkaline', group: 2, period: 3, electronConfig: '[Ne] 3s²', electronegativity: 1.31 },
+            { number: 13, symbol: 'Al', name: 'Aluminium', mass: 26.98, category: 'post-transition', group: 13, period: 3 },
+            { number: 14, symbol: 'Si', name: 'Silicon', mass: 28.09, category: 'metalloid', group: 14, period: 3 },
+            { number: 15, symbol: 'P', name: 'Phosphorus', mass: 30.97, category: 'nonmetal', group: 15, period: 3 },
+            { number: 16, symbol: 'S', name: 'Sulfur', mass: 32.07, category: 'nonmetal', group: 16, period: 3, electronConfig: '[Ne] 3s² 3p⁴', electronegativity: 2.58 },
+            { number: 17, symbol: 'Cl', name: 'Chlorine', mass: 35.45, category: 'halogen', group: 17, period: 3, electronConfig: '[Ne] 3s² 3p⁵', electronegativity: 3.16 },
+            { number: 18, symbol: 'Ar', name: 'Argon', mass: 39.95, category: 'noble', group: 18, period: 3 },
+            { number: 19, symbol: 'K', name: 'Potassium', mass: 39.10, category: 'alkali', group: 1, period: 4, electronConfig: '[Ar] 4s¹', electronegativity: 0.82 },
+            { number: 20, symbol: 'Ca', name: 'Calcium', mass: 40.08, category: 'alkaline', group: 2, period: 4, electronConfig: '[Ar] 4s²', electronegativity: 1.00 },
+            { number: 21, symbol: 'Sc', name: 'Scandium', mass: 44.96, category: 'transition', group: 3, period: 4 },
+            { number: 22, symbol: 'Ti', name: 'Titanium', mass: 47.87, category: 'transition', group: 4, period: 4 },
+            { number: 23, symbol: 'V', name: 'Vanadium', mass: 50.94, category: 'transition', group: 5, period: 4 },
+            { number: 24, symbol: 'Cr', name: 'Chromium', mass: 52.00, category: 'transition', group: 6, period: 4 },
+            { number: 25, symbol: 'Mn', name: 'Manganese', mass: 54.94, category: 'transition', group: 7, period: 4 },
+            { number: 26, symbol: 'Fe', name: 'Iron', mass: 55.85, category: 'transition', group: 8, period: 4, electronConfig: '[Ar] 3d⁶ 4s²', electronegativity: 1.83 },
+            { number: 27, symbol: 'Co', name: 'Cobalt', mass: 58.93, category: 'transition', group: 9, period: 4 },
+            { number: 28, symbol: 'Ni', name: 'Nickel', mass: 58.69, category: 'transition', group: 10, period: 4 },
+            { number: 29, symbol: 'Cu', name: 'Copper', mass: 63.55, category: 'transition', group: 11, period: 4, electronConfig: '[Ar] 3d¹⁰ 4s¹', electronegativity: 1.90 },
+            { number: 30, symbol: 'Zn', name: 'Zinc', mass: 65.38, category: 'transition', group: 12, period: 4, electronConfig: '[Ar] 3d¹⁰ 4s²', electronegativity: 1.65 },
+            { number: 31, symbol: 'Ga', name: 'Gallium', mass: 69.72, category: 'post-transition', group: 13, period: 4 },
+            { number: 32, symbol: 'Ge', name: 'Germanium', mass: 72.63, category: 'metalloid', group: 14, period: 4 },
+            { number: 33, symbol: 'As', name: 'Arsenic', mass: 74.92, category: 'metalloid', group: 15, period: 4 },
+            { number: 34, symbol: 'Se', name: 'Selenium', mass: 78.97, category: 'nonmetal', group: 16, period: 4 },
+            { number: 35, symbol: 'Br', name: 'Bromine', mass: 79.90, category: 'halogen', group: 17, period: 4, electronConfig: '[Ar] 3d¹⁰ 4s² 4p⁵', electronegativity: 2.96 },
+            { number: 36, symbol: 'Kr', name: 'Krypton', mass: 83.80, category: 'noble', group: 18, period: 4 }
+        ];
+
+        const atomicMasses = {
+            'H': 1.008, 'He': 4.003, 'Li': 6.941, 'Be': 9.012, 'B': 10.81, 'C': 12.01,
+            'N': 14.01, 'O': 16.00, 'F': 19.00, 'Ne': 20.18, 'Na': 22.99, 'Mg': 24.31,
+            'Al': 26.98, 'Si': 28.09, 'P': 30.97, 'S': 32.07, 'Cl': 35.45, 'Ar': 39.95,
+            'K': 39.10, 'Ca': 40.08, 'Fe': 55.85, 'Cu': 63.55, 'Zn': 65.38, 'Br': 79.90,
+            'Ag': 107.9, 'I': 126.9, 'Ba': 137.3, 'Au': 197.0, 'Pb': 207.2
+        };
+
+        const topics = [
+            { id: 'atomic', icon: '⚛️', title: 'Atomic Structure', desc: 'Atoms, subatomic particles, electron configuration, isotopes', lessons: 8, questions: 45, progress: 0, content: '<h2>Atomic Structure</h2><h3>The Atom</h3><p>An atom is the smallest particle of an element that retains the chemical properties of that element. Atoms consist of three types of subatomic particles:</p><ul><li><strong>Protons</strong> - positively charged particles found in the nucleus</li><li><strong>Neutrons</strong> - neutral particles found in the nucleus</li><li><strong>Electrons</strong> - negatively charged particles orbiting the nucleus</li></ul><div class="key-point"><div class="key-point-title">Key Definition</div><p><strong>Atomic Number (Z)</strong> = Number of protons<br><strong>Mass Number (A)</strong> = Protons + Neutrons</p></div><h3>Isotopes</h3><p>Isotopes are atoms of the same element with the same number of protons but different numbers of neutrons.</p><h3>Electron Configuration</h3><p>Electrons are arranged in energy levels (shells) around the nucleus. The maximum number of electrons in each shell is given by 2n².</p>' },
+            { id: 'bonding', icon: '🔗', title: 'Chemical Bonding', desc: 'Ionic, covalent, metallic bonding, electronegativity, shapes', lessons: 10, questions: 52, progress: 0, content: '<h2>Chemical Bonding</h2><h3>Ionic Bonding</h3><p>Ionic bonds form between metals and non-metals through the transfer of electrons.</p><div class="key-point"><div class="key-point-title">Properties of Ionic Compounds</div><ul><li>High melting and boiling points</li><li>Conduct electricity when molten or dissolved</li><li>Form crystalline lattice structures</li></ul></div><h3>Covalent Bonding</h3><p>Covalent bonds form between non-metals through the sharing of electron pairs.</p><h3>Electronegativity</h3><p>Electronegativity is the ability of an atom to attract shared electrons towards itself in a covalent bond.</p>' },
+            { id: 'stoichiometry', icon: '⚖️', title: 'Stoichiometry & The Mole', desc: 'Mole concept, calculations, limiting reagents, yields', lessons: 12, questions: 68, progress: 0, content: '<h2>Stoichiometry & The Mole</h2><h3>The Mole Concept</h3><p>The mole is the SI unit for amount of substance. One mole contains exactly 6.022 × 10²³ particles (Avogadro\'s number).</p><div class="key-point"><div class="key-point-title">Key Formulae</div><p>Number of moles (n) = mass (m) / molar mass (M)<br>Number of moles (n) = number of particles / 6.022 × 10²³<br>Number of moles (n) = volume (L) / 22.4 (at STP for gases)</p></div>' },
+            { id: 'organic', icon: '🧬', title: 'Organic Chemistry', desc: 'Hydrocarbons, functional groups, reactions, polymers', lessons: 15, questions: 85, progress: 0, content: '<h2>Organic Chemistry</h2><h3>Hydrocarbons</h3><div class="key-point"><div class="key-point-title">Homologous Series</div><ul><li><strong>Alkanes</strong> (CₙH₂ₙ₊₂): Single bonds only</li><li><strong>Alkenes</strong> (CₙH₂ₙ): Contains C=C double bond</li><li><strong>Alkynes</strong> (CₙH₂ₙ₋₂): Contains C≡C triple bond</li></ul></div><h3>Functional Groups</h3><ul><li><strong>Alcohols (-OH)</strong></li><li><strong>Aldehydes (-CHO)</strong></li><li><strong>Ketones (C=O)</strong></li><li><strong>Carboxylic acids (-COOH)</strong></li><li><strong>Esters (-COO-)</strong></li></ul>' },
+            { id: 'acids', icon: '🧫', title: 'Acids & Bases', desc: 'pH, neutralisation, titrations, buffer solutions', lessons: 9, questions: 55, progress: 0, content: '<h2>Acids & Bases</h2><div class="key-point"><div class="key-point-title">Brønsted-Lowry Definition</div><p><strong>Acid:</strong> Proton (H⁺) donor<br><strong>Base:</strong> Proton (H⁺) acceptor</p></div><h3>The pH Scale</h3><p>pH = -log₁₀[H⁺]</p><ul><li>pH < 7: Acidic</li><li>pH = 7: Neutral</li><li>pH > 7: Basic/alkaline</li></ul><h3>Neutralisation</h3><p>Acid + Base → Salt + Water</p>' },
+            { id: 'redox', icon: '🔋', title: 'Electrochemistry', desc: 'Oxidation, reduction, electrochemical cells, electrolysis', lessons: 11, questions: 48, progress: 0, content: '<h2>Electrochemistry</h2><div class="key-point"><div class="key-point-title">Remember: OIL RIG</div><p><strong>O</strong>xidation <strong>I</strong>s <strong>L</strong>oss (of electrons)<br><strong>R</strong>eduction <strong>I</strong>s <strong>G</strong>ain (of electrons)</p></div><h3>Electrolysis</h3><p>Electrolysis uses electrical energy to drive a non-spontaneous reaction.</p><ul><li>Oxidation occurs at the anode (positive)</li><li>Reduction occurs at the cathode (negative)</li></ul>' },
+            { id: 'rates', icon: '⏱️', title: 'Rates & Equilibrium', desc: 'Reaction rates, factors affecting rate, Le Chatelier', lessons: 10, questions: 42, progress: 0, content: '<h2>Rates of Reaction & Equilibrium</h2><h3>Factors Affecting Rate</h3><ol><li><strong>Temperature:</strong> Higher = faster</li><li><strong>Concentration:</strong> Higher = faster</li><li><strong>Surface area:</strong> Greater = faster</li><li><strong>Catalyst:</strong> Provides alternative pathway</li><li><strong>Pressure:</strong> (for gases) Higher = faster</li></ol><div class="key-point"><div class="key-point-title">Le Chatelier\'s Principle</div><p>When a system at equilibrium is disturbed, it will shift to counteract the change.</p></div>' },
+            { id: 'gases', icon: '💨', title: 'Gases', desc: 'Gas laws, ideal gas equation, kinetic theory', lessons: 7, questions: 38, progress: 0, content: '<h2>Gases</h2><div class="key-point"><div class="key-point-title">Ideal Gas Equation</div><p><strong>PV = nRT</strong></p><ul><li>P = Pressure</li><li>V = Volume</li><li>n = Moles</li><li>R = Gas constant (8.314 J/mol·K)</li><li>T = Temperature (Kelvin)</li></ul></div><p>At STP (0°C, 1 atm), one mole of any ideal gas occupies 22.4 L</p>' },
+            { id: 'thermo', icon: '🔥', title: 'Thermochemistry', desc: 'Enthalpy, Hess\'s law, bond energies, calorimetry', lessons: 8, questions: 40, progress: 0, content: '<h2>Thermochemistry</h2><div class="key-point"><div class="key-point-title">Exothermic vs Endothermic</div><p><strong>Exothermic (ΔH < 0):</strong> Heat released<br><strong>Endothermic (ΔH > 0):</strong> Heat absorbed</p></div><h3>Heat Energy</h3><p><strong>q = mcΔT</strong></p><ul><li>q = heat energy (J)</li><li>m = mass (g)</li><li>c = specific heat capacity</li><li>ΔT = temperature change</li></ul>' },
+            { id: 'environmental', icon: '🌍', title: 'Environmental Chemistry', desc: 'Water treatment, atmosphere, pollution, green chemistry', lessons: 6, questions: 32, progress: 0, content: '<h2>Environmental Chemistry</h2><h3>Water Treatment</h3><ol><li>Screening</li><li>Settling/Sedimentation</li><li>Filtration</li><li>Chlorination</li><li>Fluoridation</li><li>pH adjustment</li></ol><h3>Pollution</h3><ul><li><strong>Acid rain:</strong> Caused by SO₂ and NOₓ</li><li><strong>Greenhouse effect:</strong> CO₂, CH₄, N₂O</li><li><strong>Ozone depletion:</strong> CFCs</li></ul>' }
+        ];
+
+        const flashcardsData = {
+            atomic: [
+                { q: "What is the atomic number?", a: "The number of protons in the nucleus of an atom" },
+                { q: "What is the mass number?", a: "The total number of protons and neutrons in the nucleus" },
+                { q: "What are isotopes?", a: "Atoms of the same element with different numbers of neutrons" },
+                { q: "What is electron configuration?", a: "The arrangement of electrons in energy levels and orbitals" },
+                { q: "State the Aufbau principle", a: "Electrons fill orbitals starting from the lowest energy level" },
+                { q: "What is Hund's rule?", a: "Electrons occupy orbitals singly before pairing up" },
+                { q: "What is the Pauli exclusion principle?", a: "No two electrons can have the same four quantum numbers" }
+            ],
+            bonding: [
+                { q: "What is an ionic bond?", a: "A bond formed by the transfer of electrons from a metal to a non-metal" },
+                { q: "What is a covalent bond?", a: "A bond formed by the sharing of electrons between atoms" },
+                { q: "What is electronegativity?", a: "The ability of an atom to attract shared electrons in a covalent bond" },
+                { q: "What is a polar covalent bond?", a: "A covalent bond where electrons are unequally shared" },
+                { q: "What is metallic bonding?", a: "Bonding where positive ions are surrounded by delocalised electrons" },
+                { q: "What is a dative/coordinate bond?", a: "A covalent bond where both electrons come from the same atom" }
+            ],
+            stoichiometry: [
+                { q: "What is Avogadro's number?", a: "6.022 × 10²³ - the number of particles in one mole" },
+                { q: "What is the molar mass?", a: "The mass of one mole of a substance, in g/mol" },
+                { q: "How do you calculate moles from mass?", a: "n = m / M (mass divided by molar mass)" },
+                { q: "What is a limiting reagent?", a: "The reactant that is completely consumed first" },
+                { q: "How do you calculate percentage yield?", a: "(Actual yield / Theoretical yield) × 100%" },
+                { q: "What is the molar volume of a gas at STP?", a: "22.4 L/mol (at 0°C and 1 atm)" }
+            ],
+            organic: [
+                { q: "What is the general formula for alkanes?", a: "CₙH₂ₙ₊₂" },
+                { q: "What is the general formula for alkenes?", a: "CₙH₂ₙ" },
+                { q: "What is the functional group in alcohols?", a: "Hydroxyl group (-OH)" },
+                { q: "What is the functional group in carboxylic acids?", a: "Carboxyl group (-COOH)" },
+                { q: "What type of reaction do alkenes undergo?", a: "Addition reactions (across the C=C double bond)" },
+                { q: "What is esterification?", a: "The reaction between an alcohol and carboxylic acid to form an ester and water" }
+            ],
+            acids: [
+                { q: "What is the Brønsted-Lowry definition of an acid?", a: "A proton (H⁺) donor" },
+                { q: "What is the Brønsted-Lowry definition of a base?", a: "A proton (H⁺) acceptor" },
+                { q: "How is pH calculated?", a: "pH = -log₁₀[H⁺]" },
+                { q: "What is a strong acid?", a: "An acid that fully dissociates in water" },
+                { q: "What is neutralisation?", a: "The reaction between an acid and a base to form salt and water" }
+            ],
+            redox: [
+                { q: "What is oxidation?", a: "Loss of electrons (or gain of oxygen)" },
+                { q: "What is reduction?", a: "Gain of electrons (or loss of oxygen)" },
+                { q: "At which electrode does oxidation occur in electrolysis?", a: "At the anode (oxidation)" },
+                { q: "At which electrode does reduction occur in electrolysis?", a: "At the cathode (reduction)" },
+                { q: "What is Faraday's equation?", a: "Q = It (Charge = Current × Time)" }
+            ],
+            rates: [
+                { q: "What are five factors that affect reaction rate?", a: "Temperature, concentration, surface area, catalyst, pressure" },
+                { q: "What is activation energy?", a: "The minimum energy required for a reaction to occur" },
+                { q: "What is a catalyst?", a: "A substance that speeds up a reaction by providing an alternative pathway with lower activation energy" },
+                { q: "What is Le Chatelier's Principle?", a: "When equilibrium is disturbed, it shifts to counteract the change" },
+                { q: "What is dynamic equilibrium?", a: "When the rate of forward reaction equals the rate of reverse reaction" }
+            ]
+        };
+
+        const quizData = {
+            atomic: [
+                { q: "What particle has a positive charge?", options: ["Proton", "Neutron", "Electron", "Photon"], correct: 0, explanation: "Protons have a positive charge and are found in the nucleus." },
+                { q: "An atom with 17 protons and 18 neutrons has a mass number of:", options: ["17", "18", "35", "1"], correct: 2, explanation: "Mass number = protons + neutrons = 17 + 18 = 35" },
+                { q: "Isotopes have different numbers of:", options: ["Protons", "Electrons", "Neutrons", "All"], correct: 2, explanation: "Isotopes have the same protons but different neutrons." },
+                { q: "The electron configuration of Na (Z=11) is:", options: ["2,8", "2,8,1", "2,8,2", "1,8,2"], correct: 1, explanation: "Sodium has 11 electrons: 2 in first shell, 8 in second, 1 in third." }
+            ],
+            bonding: [
+                { q: "Ionic bonds typically form between:", options: ["Two metals", "Two non-metals", "A metal and non-metal", "Metalloids"], correct: 2, explanation: "Ionic bonds form when metals transfer electrons to non-metals." },
+                { q: "The shape of a water molecule is:", options: ["Linear", "Bent", "Tetrahedral", "Trigonal planar"], correct: 1, explanation: "Water has a bent shape due to two bonding pairs and two lone pairs." },
+                { q: "The most electronegative element is:", options: ["Oxygen", "Chlorine", "Fluorine", "Nitrogen"], correct: 2, explanation: "Fluorine has the highest electronegativity (3.98)." }
+            ],
+            stoichiometry: [
+                { q: "How many moles are in 36g of water (H₂O)?", options: ["1 mol", "2 mol", "18 mol", "0.5 mol"], correct: 1, explanation: "Molar mass of H₂O = 18 g/mol. n = 36/18 = 2 mol" },
+                { q: "At STP, what volume does 0.5 mol of gas occupy?", options: ["11.2 L", "22.4 L", "44.8 L", "5.6 L"], correct: 0, explanation: "At STP, 1 mol = 22.4 L, so 0.5 mol = 11.2 L" },
+                { q: "What is the molar mass of CaCO₃?", options: ["60 g/mol", "84 g/mol", "100 g/mol", "112 g/mol"], correct: 2, explanation: "M = 40 + 12 + 3(16) = 100 g/mol" }
+            ],
+            organic: [
+                { q: "Which is the correct formula for propane?", options: ["C₂H₆", "C₃H₆", "C₃H₈", "C₄H₈"], correct: 2, explanation: "Propane is an alkane: CₙH₂ₙ₊₂ = C₃H₈" },
+                { q: "What is produced when alcohol reacts with carboxylic acid?", options: ["Aldehyde", "Ketone", "Ester", "Ether"], correct: 2, explanation: "Alcohol + carboxylic acid → ester + water" },
+                { q: "Alkenes undergo which type of reaction with bromine?", options: ["Substitution", "Elimination", "Addition", "Condensation"], correct: 2, explanation: "Alkenes undergo addition reactions across the double bond." }
+            ],
+            acids: [
+                { q: "What is the pH of a solution with [H⁺] = 0.001 M?", options: ["1", "2", "3", "4"], correct: 2, explanation: "pH = -log₁₀(0.001) = 3" },
+                { q: "Which is a strong acid?", options: ["Ethanoic acid", "Carbonic acid", "Hydrochloric acid", "Citric acid"], correct: 2, explanation: "HCl is a strong acid that fully dissociates." },
+                { q: "What is formed when NaOH reacts with HCl?", options: ["NaCl + H₂O", "NaCl + H₂", "NaH + ClO", "Na + HClO"], correct: 0, explanation: "NaOH + HCl → NaCl + H₂O (neutralisation)" }
+            ],
+            redox: [
+                { q: "In Zn + Cu²⁺ → Zn²⁺ + Cu, zinc is:", options: ["Oxidised", "Reduced", "Neither", "Both"], correct: 0, explanation: "Zinc loses electrons (Zn → Zn²⁺ + 2e⁻), so it is oxidised." },
+                { q: "At which electrode does oxidation occur in electrolysis?", options: ["Cathode", "Anode", "Both", "Neither"], correct: 1, explanation: "Oxidation always occurs at the anode (AN OX)." },
+                { q: "What is the oxidation state of S in H₂SO₄?", options: ["+2", "+4", "+6", "-2"], correct: 2, explanation: "2(+1) + S + 4(-2) = 0, so S = +6" }
+            ],
+            rates: [
+                { q: "Increasing temperature increases rate because:", options: ["More energetic collisions", "Lower activation energy", "Better catalyst", "Equilibrium shifts"], correct: 0, explanation: "Higher temperature means faster particles with more kinetic energy." },
+                { q: "A catalyst works by:", options: ["Increasing temperature", "Providing alternative pathway", "Increasing concentration", "Shifting equilibrium"], correct: 1, explanation: "Catalysts provide an alternative pathway with lower activation energy." },
+                { q: "For an exothermic reaction, increasing temperature will:", options: ["Shift right", "Shift left", "No effect", "Stop reaction"], correct: 1, explanation: "By Le Chatelier's principle, heating favours the endothermic (reverse) direction." }
+            ]
+        };
+
+        const formulasData = [
+            { name: "Number of moles", equation: "n = m / M", desc: "Calculate moles from mass and molar mass", vars: "n = moles, m = mass (g), M = molar mass (g/mol)", category: "stoich" },
+            { name: "Concentration", equation: "C = n / V", desc: "Calculate molarity from moles and volume", vars: "C = concentration (M), n = moles, V = volume (L)", category: "stoich" },
+            { name: "Dilution", equation: "C₁V₁ = C₂V₂", desc: "Calculate dilution concentrations/volumes", vars: "C = concentration, V = volume", category: "stoich" },
+            { name: "Percentage Yield", equation: "% = (Actual / Theoretical) × 100", desc: "Calculate reaction efficiency", vars: "Actual = experimental, Theoretical = calculated", category: "stoich" },
+            { name: "Ideal Gas Equation", equation: "PV = nRT", desc: "Relates pressure, volume, moles and temperature", vars: "P = pressure, V = volume, n = moles, R = 8.314, T = temp (K)", category: "gas" },
+            { name: "Boyle's Law", equation: "P₁V₁ = P₂V₂", desc: "Pressure-volume at constant temperature", vars: "P = pressure, V = volume", category: "gas" },
+            { name: "Charles's Law", equation: "V₁/T₁ = V₂/T₂", desc: "Volume-temperature at constant pressure", vars: "V = volume, T = temperature (K)", category: "gas" },
+            { name: "pH", equation: "pH = -log₁₀[H⁺]", desc: "Calculate pH from hydrogen ion concentration", vars: "[H⁺] = hydrogen ion concentration (M)", category: "acids" },
+            { name: "pOH", equation: "pOH = -log₁₀[OH⁻]", desc: "Calculate pOH from hydroxide ion concentration", vars: "[OH⁻] = hydroxide ion concentration (M)", category: "acids" },
+            { name: "pH + pOH", equation: "pH + pOH = 14", desc: "Relationship at 25°C", vars: "At 25°C, pKw = 14", category: "acids" },
+            { name: "Heat Energy", equation: "q = mcΔT", desc: "Calculate heat in calorimetry", vars: "q = heat (J), m = mass (g), c = specific heat, ΔT = temp change", category: "thermo" },
+            { name: "Enthalpy of Reaction", equation: "ΔH = ΣΔHf(products) - ΣΔHf(reactants)", desc: "Using formation enthalpies", vars: "ΔHf = enthalpy of formation", category: "thermo" },
+            { name: "Faraday's Law", equation: "Q = It", desc: "Charge transferred in electrolysis", vars: "Q = charge (C), I = current (A), t = time (s)", category: "redox" },
+            { name: "Equilibrium Constant", equation: "Kc = [products]ᵖ / [reactants]ʳ", desc: "Equilibrium expression", vars: "Concentrations raised to stoichiometric coefficients", category: "rates" }
+        ];
+
+        const experimentsData = [
+            { id: 1, title: "Flame Tests", badge: "Inorganic", icon: "🔥", desc: "Identify metal ions by flame colour" },
+            { id: 2, title: "Titration (Acid-Base)", badge: "Quantitative", icon: "🧪", desc: "Determine concentration by neutralisation" },
+            { id: 3, title: "Rate of Reaction", badge: "Kinetics", icon: "⏱️", desc: "Measure effect of concentration on rate" },
+            { id: 4, title: "Preparation of Ethene", badge: "Organic", icon: "🧬", desc: "Dehydration of ethanol" },
+            { id: 5, title: "Esterification", badge: "Organic", icon: "🍎", desc: "Prepare an ester from alcohol and acid" },
+            { id: 6, title: "Electrolysis of Water", badge: "Electrochemistry", icon: "⚡", desc: "Decompose water into H₂ and O₂" },
+            { id: 7, title: "Heat of Reaction", badge: "Thermochemistry", icon: "🌡️", desc: "Measure enthalpy of neutralisation" },
+            { id: 8, title: "Tests for Anions", badge: "Analytical", icon: "🔬", desc: "Identify carbonate, sulfate, chloride" }
+        ];
+
+        // ==================== STATE ====================
+        let currentFlashcardIndex = 0, currentFlashcards = [];
+        let currentQuizQuestion = 0, currentQuizQuestions = [], quizScore = 0;
+        let selectedQuizTopic = 'all', numQuizQuestions = 5;
+        let streak = parseInt(localStorage.getItem('streak') || '0');
+        let xp = parseInt(localStorage.getItem('xp') || '0');
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            createMolecules();
+            initNavigation();
+            initPeriodicTable();
+            initTopics();
+            initFlashcards();
+            initQuiz();
+            initFormulas();
+            initExperiments();
+            initMindMaps();
+            initDataTables();
+            initGlossary();
+            initExamCountdown();
+            loadProgress();
+            updateStats();
+            initDashboard();
+            
+            // Request notification permission for Pomodoro
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        });
+
+        function createMolecules() {
+            const container = document.getElementById('bgMolecules');
+            for (let i = 0; i < 12; i++) {
+                const mol = document.createElement('div');
+                mol.className = 'molecule';
+                mol.style.width = Math.random() * 100 + 50 + 'px';
+                mol.style.height = mol.style.width;
+                mol.style.left = Math.random() * 100 + '%';
+                mol.style.top = Math.random() * 100 + '%';
+                mol.style.animationDelay = Math.random() * 20 + 's';
+                container.appendChild(mol);
+            }
+        }
+
+        function initNavigation() {
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const sections = document.querySelectorAll('.section');
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const sectionId = btn.dataset.section;
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    sections.forEach(s => s.classList.remove('active'));
+                    document.getElementById(sectionId).classList.add('active');
+                    document.getElementById('topicView').classList.remove('active');
+                    document.getElementById('topicsGrid').style.display = 'grid';
+                });
+            });
+            document.querySelectorAll('.quick-action').forEach(action => {
+                action.addEventListener('click', () => {
+                    document.querySelector(`[data-section="${action.dataset.goto}"]`).click();
+                });
+            });
+        }
+
+        function initDashboard() {
+            const recentTopics = document.getElementById('recentTopics');
+            const recent = topics.slice(0, 3);
+            recentTopics.innerHTML = recent.map(topic => `
+                <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: var(--bg-tertiary); border-radius: var(--radius-sm); margin-bottom: 0.5rem; cursor: pointer;" onclick="goToTopic('${topic.id}')">
+                    <span style="font-size: 1.5rem;">${topic.icon}</span>
+                    <div style="flex: 1;"><div style="font-weight: 500;">${topic.title}</div><div style="font-size: 0.8rem; color: var(--text-secondary);">${topic.progress || 0}% complete</div></div>
+                    <span style="color: var(--accent-cyan);">→</span>
+                </div>
+            `).join('');
+            updateProgressDisplay();
+        }
+
+        function goToTopic(topicId) {
+            document.querySelector('[data-section="topics"]').click();
+            setTimeout(() => showTopicContent(topicId), 100);
+        }
+
+        // ==================== PERIODIC TABLE ====================
+        function initPeriodicTable() {
+            const table = document.getElementById('periodicTable');
+            const layout = [
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 6, 7, 8, 9, 10],
+                [11, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 14, 15, 16, 17, 18],
+                [19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
+            ];
+            layout.forEach(row => {
+                row.forEach(num => {
+                    if (num === 0) {
+                        const spacer = document.createElement('div');
+                        spacer.className = 'element-spacer';
+                        table.appendChild(spacer);
+                    } else {
+                        const el = elements.find(e => e.number === num);
+                        if (el) {
+                            const elem = document.createElement('div');
+                            elem.className = `element ${el.category}`;
+                            elem.innerHTML = `<span class="number">${el.number}</span><span class="symbol">${el.symbol}</span><span class="name">${el.name}</span>`;
+                            elem.addEventListener('click', () => showElementModal(el));
+                            table.appendChild(elem);
+                        }
+                    }
+                });
+            });
+        }
+
+        function showElementModal(el) {
+            const modal = document.getElementById('elementModal');
+            const body = document.getElementById('elementModalBody');
+            const catNames = { 'alkali': 'Alkali Metal', 'alkaline': 'Alkaline Earth Metal', 'transition': 'Transition Metal', 'post-transition': 'Post-Transition Metal', 'metalloid': 'Metalloid', 'nonmetal': 'Nonmetal', 'halogen': 'Halogen', 'noble': 'Noble Gas' };
+            body.innerHTML = `
+                <div class="element-detail-header">
+                    <div class="element-big ${el.category}"><span class="number">${el.number}</span><span class="symbol">${el.symbol}</span></div>
+                    <div class="element-info"><h2>${el.name}</h2><p>${catNames[el.category] || el.category}</p></div>
+                </div>
+                <div class="element-properties">
+                    <div class="property"><div class="property-label">Atomic Mass</div><div class="property-value">${el.mass} u</div></div>
+                    <div class="property"><div class="property-label">Atomic Number</div><div class="property-value">${el.number}</div></div>
+                    <div class="property"><div class="property-label">Group</div><div class="property-value">${el.group || 'N/A'}</div></div>
+                    <div class="property"><div class="property-label">Period</div><div class="property-value">${el.period || 'N/A'}</div></div>
+                    ${el.electronConfig ? `<div class="property"><div class="property-label">Electron Config</div><div class="property-value" style="font-size: 0.85rem;">${el.electronConfig}</div></div>` : ''}
+                    ${el.electronegativity ? `<div class="property"><div class="property-label">Electronegativity</div><div class="property-value">${el.electronegativity}</div></div>` : ''}
+                </div>`;
+            modal.classList.add('active');
+        }
+
+        document.getElementById('closeModal').addEventListener('click', () => document.getElementById('elementModal').classList.remove('active'));
+        document.getElementById('elementModal').addEventListener('click', (e) => { if (e.target.id === 'elementModal') document.getElementById('elementModal').classList.remove('active'); });
+
+        // ==================== TOPICS ====================
+        function initTopics() {
+            const grid = document.getElementById('topicsGrid');
+            grid.innerHTML = topics.map(topic => `
+                <div class="card topic-card" data-topic="${topic.id}">
+                    <div class="topic-header"><div class="topic-icon">${topic.icon}</div><span class="topic-progress">${topic.progress}%</span></div>
+                    <h3 class="topic-title">${topic.title}</h3>
+                    <p class="topic-desc">${topic.desc}</p>
+                    <div class="topic-stats"><span class="topic-stat">📖 ${topic.lessons} lessons</span><span class="topic-stat">❓ ${topic.questions} questions</span></div>
+                </div>
+            `).join('');
+            document.querySelectorAll('.topic-card').forEach(card => { card.addEventListener('click', () => showTopicContent(card.dataset.topic)); });
+            document.getElementById('backToTopics').addEventListener('click', () => { document.getElementById('topicView').classList.remove('active'); document.getElementById('topicsGrid').style.display = 'grid'; });
+        }
+
+        function showTopicContent(topicId) {
+            const topic = topics.find(t => t.id === topicId);
+            if (!topic) return;
+            document.getElementById('topicsGrid').style.display = 'none';
+            document.getElementById('topicContent').innerHTML = topic.content;
+            document.getElementById('topicView').classList.add('active');
+            
+            // Update progress - viewing a topic gives at least 25% progress
+            const currentProgress = topic.progress || 0;
+            if (currentProgress < 25) {
+                saveProgress(topicId, 25);
+            }
+            addXP(10);
+            
+            // Refresh the topics grid to show updated progress
+            initTopics();
+        }
+
+        // ==================== FLASHCARDS ====================
+        function initFlashcards() {
+            const flashcard = document.getElementById('flashcard');
+            flashcard.addEventListener('click', () => { flashcard.classList.toggle('flipped'); if (flashcard.classList.contains('flipped')) document.getElementById('ratingButtons').style.display = 'flex'; });
+            document.getElementById('startFlashcards').addEventListener('click', startFlashcardSession);
+            document.getElementById('prevCard').addEventListener('click', prevFlashcard);
+            document.getElementById('nextCard').addEventListener('click', nextFlashcard);
+            document.querySelectorAll('.rating-btn').forEach(btn => { btn.addEventListener('click', () => { 
+                addXP(btn.classList.contains('easy') ? 15 : btn.classList.contains('good') ? 10 : 5); 
+                
+                // Track flashcard progress
+                const currentTopic = document.getElementById('flashcardTopic').value;
+                if (currentTopic !== 'all') {
+                    const topic = topics.find(t => t.id === currentTopic);
+                    if (topic) {
+                        const newProgress = Math.min(100, (topic.progress || 0) + 5);
+                        saveProgress(currentTopic, newProgress);
+                    }
+                }
+                
+                nextFlashcard(); 
+            }); });
+        }
+
+        function startFlashcardSession() {
+            const topic = document.getElementById('flashcardTopic').value;
+            currentFlashcards = topic === 'all' ? Object.values(flashcardsData).flat() : (flashcardsData[topic] || []);
+            currentFlashcards = currentFlashcards.sort(() => Math.random() - 0.5);
+            currentFlashcardIndex = 0;
+            if (currentFlashcards.length > 0) { showFlashcard(); document.getElementById('prevCard').disabled = true; document.getElementById('nextCard').disabled = false; }
+        }
+
+        function showFlashcard() {
+            const card = currentFlashcards[currentFlashcardIndex];
+            document.getElementById('flashcardQuestion').textContent = card.q;
+            document.getElementById('flashcardAnswer').textContent = card.a;
+            document.getElementById('currentCard').textContent = currentFlashcardIndex + 1;
+            document.getElementById('totalCards').textContent = currentFlashcards.length;
+            document.getElementById('flashcard').classList.remove('flipped');
+            document.getElementById('ratingButtons').style.display = 'none';
+        }
+
+        function nextFlashcard() { if (currentFlashcardIndex < currentFlashcards.length - 1) { currentFlashcardIndex++; showFlashcard(); document.getElementById('prevCard').disabled = false; } if (currentFlashcardIndex === currentFlashcards.length - 1) document.getElementById('nextCard').disabled = true; }
+        function prevFlashcard() { if (currentFlashcardIndex > 0) { currentFlashcardIndex--; showFlashcard(); document.getElementById('nextCard').disabled = false; } if (currentFlashcardIndex === 0) document.getElementById('prevCard').disabled = true; }
+
+        // ==================== QUIZ ====================
+        function initQuiz() {
+            const topicOptions = document.getElementById('quizTopicOptions');
+            topicOptions.innerHTML = `<div class="quiz-option selected" data-topic="all">All Topics</div>` + topics.filter(t => quizData[t.id]).map(topic => `<div class="quiz-option" data-topic="${topic.id}">${topic.icon} ${topic.title}</div>`).join('');
+            topicOptions.addEventListener('click', (e) => { if (e.target.classList.contains('quiz-option')) { topicOptions.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected')); e.target.classList.add('selected'); selectedQuizTopic = e.target.dataset.topic; } });
+            document.querySelectorAll('[data-questions]').forEach(btn => { btn.addEventListener('click', () => { document.querySelectorAll('[data-questions]').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); numQuizQuestions = parseInt(btn.dataset.questions); }); });
+            document.getElementById('startQuiz').addEventListener('click', startQuiz);
+            document.getElementById('quitQuiz').addEventListener('click', quitQuiz);
+            document.getElementById('nextQuestion').addEventListener('click', nextQuizQuestion);
+            document.getElementById('retakeQuiz').addEventListener('click', () => { document.getElementById('quizResults').style.display = 'none'; document.getElementById('quizSetup').style.display = 'block'; });
+        }
+
+        function startQuiz() {
+            currentQuizQuestions = selectedQuizTopic === 'all' ? Object.values(quizData).flat() : (quizData[selectedQuizTopic] || []);
+            currentQuizQuestions = currentQuizQuestions.sort(() => Math.random() - 0.5).slice(0, numQuizQuestions);
+            currentQuizQuestion = 0; quizScore = 0;
+            document.getElementById('quizSetup').style.display = 'none';
+            document.getElementById('quizArea').style.display = 'block';
+            document.getElementById('quizResults').style.display = 'none';
+            showQuizQuestion();
+        }
+
+        function showQuizQuestion() {
+            const q = currentQuizQuestions[currentQuizQuestion], total = currentQuizQuestions.length;
+            document.getElementById('quizQuestionNum').textContent = `${currentQuizQuestion + 1}/${total}`;
+            document.getElementById('quizProgressBar').style.width = `${((currentQuizQuestion + 1) / total) * 100}%`;
+            document.getElementById('quizScore').textContent = `Score: ${quizScore}`;
+            const letters = ['A', 'B', 'C', 'D'];
+            document.getElementById('quizQuestionArea').innerHTML = `<div class="question-number">Question ${currentQuizQuestion + 1}</div><div class="question-text">${q.q}</div><div class="answers">${q.options.map((opt, i) => `<div class="answer-option" data-index="${i}"><span class="answer-letter">${letters[i]}</span><span>${opt}</span></div>`).join('')}</div>`;
+            document.getElementById('nextQuestion').style.display = 'none';
+            document.querySelectorAll('.answer-option').forEach(opt => { opt.addEventListener('click', () => selectAnswer(parseInt(opt.dataset.index))); });
+        }
+
+        function selectAnswer(index) {
+            const q = currentQuizQuestions[currentQuizQuestion];
+            document.querySelectorAll('.answer-option').forEach(opt => {
+                opt.classList.add('disabled'); opt.style.pointerEvents = 'none';
+                if (parseInt(opt.dataset.index) === q.correct) opt.classList.add('correct');
+                else if (parseInt(opt.dataset.index) === index && index !== q.correct) opt.classList.add('incorrect');
+            });
+            if (index === q.correct) { quizScore++; addXP(20); }
+            document.getElementById('quizQuestionArea').innerHTML += `<div class="explanation"><div class="explanation-title">💡 Explanation</div><p>${q.explanation}</p></div>`;
+            document.getElementById('quizScore').textContent = `Score: ${quizScore}`;
+            document.getElementById('nextQuestion').style.display = 'block';
+            document.getElementById('nextQuestion').textContent = currentQuizQuestion < currentQuizQuestions.length - 1 ? 'Next Question →' : 'See Results';
+        }
+
+        function nextQuizQuestion() { currentQuizQuestion++; if (currentQuizQuestion < currentQuizQuestions.length) showQuizQuestion(); else showQuizResults(); }
+        function showQuizResults() {
+            const percent = Math.round((quizScore / currentQuizQuestions.length) * 100);
+            document.getElementById('quizArea').style.display = 'none';
+            document.getElementById('quizResults').style.display = 'block';
+            document.getElementById('finalScore').textContent = `${percent}%`;
+            document.getElementById('finalScoreLabel').textContent = `${quizScore} out of ${currentQuizQuestions.length} correct`;
+            addXP(percent >= 80 ? 50 : percent >= 60 ? 30 : 10);
+            
+            // Update topic progress based on quiz performance
+            if (selectedQuizTopic !== 'all') {
+                const topic = topics.find(t => t.id === selectedQuizTopic);
+                if (topic) {
+                    const newProgress = Math.min(100, Math.max(topic.progress || 0, percent >= 80 ? 100 : percent >= 60 ? 75 : 50));
+                    saveProgress(selectedQuizTopic, newProgress);
+                    initTopics();
+                }
+            }
+        }
+        function quitQuiz() { document.getElementById('quizArea').style.display = 'none'; document.getElementById('quizSetup').style.display = 'block'; }
+
+        // ==================== CALCULATORS ====================
+        function calculateMoles() { const mass = parseFloat(document.getElementById('moleMass').value), molarMass = parseFloat(document.getElementById('moleMolarMass').value); if (!isNaN(mass) && !isNaN(molarMass) && molarMass !== 0) document.getElementById('moleResult').textContent = (mass / molarMass).toFixed(4) + ' mol'; }
+        function calculateConcentration() { const moles = parseFloat(document.getElementById('concMoles').value), volume = parseFloat(document.getElementById('concVolume').value); if (!isNaN(moles) && !isNaN(volume) && volume !== 0) document.getElementById('concResult').textContent = (moles / volume).toFixed(4) + ' M'; }
+        function calculateDilution() { const c1 = parseFloat(document.getElementById('dilC1').value), v1 = parseFloat(document.getElementById('dilV1').value), c2 = parseFloat(document.getElementById('dilC2').value); if (!isNaN(c1) && !isNaN(v1) && !isNaN(c2) && c2 !== 0) document.getElementById('dilResult').textContent = ((c1 * v1) / c2).toFixed(2) + ' mL'; }
+        function calculatePH() { const conc = parseFloat(document.getElementById('phConc').value); if (!isNaN(conc) && conc > 0) document.getElementById('phResult').textContent = (-Math.log10(conc)).toFixed(2); }
+        function calculateGas() { const P = parseFloat(document.getElementById('gasP').value), V = parseFloat(document.getElementById('gasV').value), T = parseFloat(document.getElementById('gasT').value); if (!isNaN(P) && !isNaN(V) && !isNaN(T) && T !== 0) document.getElementById('gasResult').textContent = ((P * V) / (0.0821 * T)).toFixed(4) + ' mol'; }
+        function calculateMolarMass() {
+            const formula = document.getElementById('molarFormula').value.trim();
+            if (!formula) return;
+            const parsed = {}, regex = /([A-Z][a-z]?)(\d*)/g; let match;
+            while ((match = regex.exec(formula)) !== null) { parsed[match[1]] = (parsed[match[1]] || 0) + (match[2] ? parseInt(match[2]) : 1); }
+            let total = 0, breakdown = [];
+            for (const [el, count] of Object.entries(parsed)) { const mass = atomicMasses[el]; if (mass) { total += mass * count; breakdown.push(`${el}: ${mass} × ${count} = ${(mass * count).toFixed(2)}`); } }
+            document.getElementById('molarMassResult').textContent = total.toFixed(2) + ' g/mol';
+            document.getElementById('molarMassBreakdown').innerHTML = breakdown.join('<br>');
+        }
+
+        // ==================== FORMULAS ====================
+        function initFormulas() { renderFormulas('all'); document.querySelectorAll('.formula-cat-btn').forEach(btn => { btn.addEventListener('click', () => { document.querySelectorAll('.formula-cat-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderFormulas(btn.dataset.category); }); }); }
+        function renderFormulas(category) { const list = document.getElementById('formulaList'), filtered = category === 'all' ? formulasData : formulasData.filter(f => f.category === category); list.innerHTML = filtered.map(f => `<div class="formula-item"><div class="formula-name">${f.name}</div><div class="formula-equation">${f.equation}</div><div class="formula-desc">${f.desc}</div><div class="formula-vars">${f.vars}</div></div>`).join(''); }
+
+        // ==================== EXPERIMENTS ====================
+        function initExperiments() { const grid = document.getElementById('experimentsGrid'); grid.innerHTML = experimentsData.map(exp => `<div class="card experiment-card"><span class="experiment-badge">${exp.badge}</span><div class="experiment-image">${exp.icon}</div><h3 class="topic-title">${exp.title}</h3><p class="topic-desc">${exp.desc}</p><button class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="alert('Full experiment guide coming soon!')">View Guide</button></div>`).join(''); }
+
+        // ==================== MIND MAPS ====================
+        const mindmapData = {
+            atomic: {
+                center: { label: 'Atomic Structure', color: '#00d4ff' },
+                nodes: [
+                    { id: 'subatomic', label: 'Subatomic Particles', color: '#ff006e', desc: 'Atoms are made of protons (positive, in nucleus), neutrons (neutral, in nucleus), and electrons (negative, orbiting nucleus).' },
+                    { id: 'protons', label: 'Protons (+)', color: '#ff006e', parent: 'subatomic', desc: 'Positive charge, mass ≈ 1 amu, found in nucleus. Number of protons = atomic number.' },
+                    { id: 'neutrons', label: 'Neutrons (0)', color: '#ff006e', parent: 'subatomic', desc: 'No charge, mass ≈ 1 amu, found in nucleus. Different neutrons = isotopes.' },
+                    { id: 'electrons', label: 'Electrons (-)', color: '#ff006e', parent: 'subatomic', desc: 'Negative charge, mass ≈ 1/1836 amu, orbit nucleus in shells/orbitals.' },
+                    { id: 'numbers', label: 'Atomic Numbers', color: '#ffbe0b', desc: 'Atomic number (Z) = protons. Mass number (A) = protons + neutrons.' },
+                    { id: 'isotopes', label: 'Isotopes', color: '#ffbe0b', parent: 'numbers', desc: 'Same element, same protons, different neutrons. Same chemical properties, different physical properties.' },
+                    { id: 'config', label: 'Electron Config', color: '#00ff88', desc: 'Arrangement of electrons in energy levels and orbitals around the nucleus.' },
+                    { id: 'shells', label: 'Energy Levels', color: '#00ff88', parent: 'config', desc: 'Shells hold max 2n² electrons: 1st=2, 2nd=8, 3rd=18, 4th=32.' },
+                    { id: 'orbitals', label: 'Orbitals (s,p,d,f)', color: '#00ff88', parent: 'config', desc: 's=2, p=6, d=10, f=14 electrons. Fill order: 1s→2s→2p→3s→3p→4s→3d...' },
+                    { id: 'aufbau', label: 'Aufbau Principle', color: '#8338ec', parent: 'config', desc: 'Electrons fill lowest energy orbitals first.' },
+                    { id: 'hund', label: "Hund's Rule", color: '#8338ec', parent: 'config', desc: 'Electrons occupy orbitals singly before pairing (same spin).' },
+                    { id: 'pauli', label: 'Pauli Exclusion', color: '#8338ec', parent: 'config', desc: 'No two electrons can have the same four quantum numbers.' }
+                ]
+            },
+            bonding: {
+                center: { label: 'Chemical Bonding', color: '#00d4ff' },
+                nodes: [
+                    { id: 'ionic', label: 'Ionic Bonding', color: '#ff006e', desc: 'Transfer of electrons from metal to non-metal. Forms ions that attract electrostatically.' },
+                    { id: 'ionic-props', label: 'Ionic Properties', color: '#ff006e', parent: 'ionic', desc: 'High m.p./b.p., conduct when molten/dissolved, crystalline lattice, brittle.' },
+                    { id: 'covalent', label: 'Covalent Bonding', color: '#00ff88', desc: 'Sharing of electron pairs between non-metal atoms.' },
+                    { id: 'polar', label: 'Polar Covalent', color: '#00ff88', parent: 'covalent', desc: 'Unequal sharing due to electronegativity difference (0.5-1.7).' },
+                    { id: 'nonpolar', label: 'Non-polar', color: '#00ff88', parent: 'covalent', desc: 'Equal sharing, electronegativity difference < 0.5.' },
+                    { id: 'dative', label: 'Dative/Coordinate', color: '#00ff88', parent: 'covalent', desc: 'Both electrons from same atom (e.g., NH₄⁺, H₃O⁺).' },
+                    { id: 'metallic', label: 'Metallic Bonding', color: '#ffbe0b', desc: 'Sea of delocalised electrons around positive metal ions.' },
+                    { id: 'metal-props', label: 'Metallic Properties', color: '#ffbe0b', parent: 'metallic', desc: 'Good conductors, malleable, ductile, lustrous.' },
+                    { id: 'electro', label: 'Electronegativity', color: '#8338ec', desc: 'Ability to attract shared electrons. Increases across period, decreases down group.' },
+                    { id: 'shapes', label: 'Molecular Shapes', color: '#8338ec', desc: 'VSEPR theory: shapes determined by electron pair repulsion.' },
+                    { id: 'linear', label: 'Linear (180°)', color: '#8338ec', parent: 'shapes', desc: '2 bonding pairs, no lone pairs (e.g., CO₂, BeCl₂).' },
+                    { id: 'bent', label: 'Bent/V-shape', color: '#8338ec', parent: 'shapes', desc: '2 bonding pairs + lone pairs (e.g., H₂O=104.5°, SO₂).' },
+                    { id: 'tetrahedral', label: 'Tetrahedral (109.5°)', color: '#8338ec', parent: 'shapes', desc: '4 bonding pairs, no lone pairs (e.g., CH₄, CCl₄).' }
+                ]
+            },
+            stoichiometry: {
+                center: { label: 'Stoichiometry', color: '#00d4ff' },
+                nodes: [
+                    { id: 'mole', label: 'The Mole', color: '#ff006e', desc: 'SI unit for amount. 1 mole = 6.022 × 10²³ particles (Avogadro\'s number).' },
+                    { id: 'molar-mass', label: 'Molar Mass', color: '#ff006e', parent: 'mole', desc: 'Mass of 1 mole in g/mol. Equals relative atomic/molecular mass in grams.' },
+                    { id: 'n-formula', label: 'n = m/M', color: '#ff006e', parent: 'mole', desc: 'Moles = mass ÷ molar mass. Rearrange: m = nM, M = m/n.' },
+                    { id: 'concentration', label: 'Concentration', color: '#00ff88', desc: 'Amount per unit volume. C = n/V (mol/L or M).' },
+                    { id: 'dilution', label: 'Dilution C₁V₁=C₂V₂', color: '#00ff88', parent: 'concentration', desc: 'Moles before = moles after dilution.' },
+                    { id: 'gases', label: 'Molar Volume', color: '#ffbe0b', desc: 'At STP (0°C, 1atm): 1 mole of any gas = 22.4 L.' },
+                    { id: 'calcs', label: 'Stoich Calculations', color: '#8338ec', desc: 'Use balanced equation ratios to convert between substances.' },
+                    { id: 'limiting', label: 'Limiting Reagent', color: '#8338ec', parent: 'calcs', desc: 'Reactant completely consumed first, limits product formed.' },
+                    { id: 'excess', label: 'Excess Reagent', color: '#8338ec', parent: 'calcs', desc: 'Reactant left over after reaction completes.' },
+                    { id: 'yield', label: 'Percentage Yield', color: '#8338ec', parent: 'calcs', desc: '(Actual yield ÷ Theoretical yield) × 100%.' },
+                    { id: 'atom-econ', label: 'Atom Economy', color: '#8338ec', parent: 'calcs', desc: '(Mr of desired product ÷ Mr of all products) × 100%.' }
+                ]
+            },
+            organic: {
+                center: { label: 'Organic Chemistry', color: '#00d4ff' },
+                nodes: [
+                    { id: 'hydrocarbons', label: 'Hydrocarbons', color: '#ff006e', desc: 'Compounds containing only carbon and hydrogen atoms.' },
+                    { id: 'alkanes', label: 'Alkanes CₙH₂ₙ₊₂', color: '#ff006e', parent: 'hydrocarbons', desc: 'Saturated, single bonds only. Undergo substitution reactions.' },
+                    { id: 'alkenes', label: 'Alkenes CₙH₂ₙ', color: '#ff006e', parent: 'hydrocarbons', desc: 'Unsaturated, C=C double bond. Undergo addition reactions.' },
+                    { id: 'alkynes', label: 'Alkynes CₙH₂ₙ₋₂', color: '#ff006e', parent: 'hydrocarbons', desc: 'Unsaturated, C≡C triple bond.' },
+                    { id: 'functional', label: 'Functional Groups', color: '#00ff88', desc: 'Groups of atoms that determine chemical properties.' },
+                    { id: 'alcohols', label: 'Alcohols -OH', color: '#00ff88', parent: 'functional', desc: 'Hydroxyl group. Primary, secondary, tertiary. Oxidation → aldehydes/ketones/acids.' },
+                    { id: 'aldehydes', label: 'Aldehydes -CHO', color: '#00ff88', parent: 'functional', desc: 'Terminal carbonyl. Oxidise to carboxylic acids.' },
+                    { id: 'ketones', label: 'Ketones C=O', color: '#00ff88', parent: 'functional', desc: 'Internal carbonyl. Resistant to oxidation.' },
+                    { id: 'acids', label: 'Carboxylic -COOH', color: '#00ff88', parent: 'functional', desc: 'Weak acids. React with alcohols → esters.' },
+                    { id: 'esters', label: 'Esters -COO-', color: '#00ff88', parent: 'functional', desc: 'Sweet smells. Esterification: acid + alcohol → ester + water.' },
+                    { id: 'reactions', label: 'Reaction Types', color: '#ffbe0b', desc: 'Addition, substitution, elimination, condensation, oxidation.' },
+                    { id: 'polymers', label: 'Polymers', color: '#8338ec', desc: 'Large molecules from repeating monomer units.' },
+                    { id: 'addition-poly', label: 'Addition Polymers', color: '#8338ec', parent: 'polymers', desc: 'From alkenes (e.g., polyethene). No by-products.' },
+                    { id: 'condensation-poly', label: 'Condensation Polymers', color: '#8338ec', parent: 'polymers', desc: 'Release small molecules (e.g., nylon, polyester).' }
+                ]
+            },
+            acids: {
+                center: { label: 'Acids & Bases', color: '#00d4ff' },
+                nodes: [
+                    { id: 'definitions', label: 'Definitions', color: '#ff006e', desc: 'Arrhenius: H⁺/OH⁻ producers. Brønsted-Lowry: H⁺ donor/acceptor.' },
+                    { id: 'acid-def', label: 'Acid = H⁺ donor', color: '#ff006e', parent: 'definitions', desc: 'Donates protons. Has conjugate base.' },
+                    { id: 'base-def', label: 'Base = H⁺ acceptor', color: '#ff006e', parent: 'definitions', desc: 'Accepts protons. Has conjugate acid.' },
+                    { id: 'ph-scale', label: 'pH Scale', color: '#00ff88', desc: 'pH = -log₁₀[H⁺]. Range 0-14. pH 7 = neutral at 25°C.' },
+                    { id: 'acidic', label: 'Acidic: pH < 7', color: '#00ff88', parent: 'ph-scale', desc: 'Higher [H⁺] than pure water.' },
+                    { id: 'basic', label: 'Basic: pH > 7', color: '#00ff88', parent: 'ph-scale', desc: 'Higher [OH⁻] than pure water. pOH = 14 - pH.' },
+                    { id: 'strong-weak', label: 'Strong vs Weak', color: '#ffbe0b', desc: 'Strong = fully dissociate. Weak = partially dissociate.' },
+                    { id: 'strong-acids', label: 'Strong Acids', color: '#ffbe0b', parent: 'strong-weak', desc: 'HCl, H₂SO₄, HNO₃ - fully ionise in water.' },
+                    { id: 'weak-acids', label: 'Weak Acids', color: '#ffbe0b', parent: 'strong-weak', desc: 'CH₃COOH, H₂CO₃ - equilibrium with undissociated form.' },
+                    { id: 'neutralisation', label: 'Neutralisation', color: '#8338ec', desc: 'Acid + Base → Salt + Water. Exothermic reaction.' },
+                    { id: 'titration', label: 'Titrations', color: '#8338ec', parent: 'neutralisation', desc: 'Determine unknown concentration using known solution.' },
+                    { id: 'indicators', label: 'Indicators', color: '#8338ec', parent: 'titration', desc: 'Phenolphthalein (8.2-10), methyl orange (3.1-4.4).' },
+                    { id: 'buffers', label: 'Buffer Solutions', color: '#8338ec', desc: 'Resist pH changes. Weak acid + conjugate base.' }
+                ]
+            },
+            redox: {
+                center: { label: 'Electrochemistry', color: '#00d4ff' },
+                nodes: [
+                    { id: 'oxidation', label: 'Oxidation', color: '#ff006e', desc: 'Loss of electrons. Gain of oxygen. Increase in oxidation state.' },
+                    { id: 'reduction', label: 'Reduction', color: '#00ff88', desc: 'Gain of electrons. Loss of oxygen. Decrease in oxidation state.' },
+                    { id: 'oilrig', label: 'OIL RIG', color: '#ffbe0b', desc: 'Oxidation Is Loss, Reduction Is Gain (of electrons).' },
+                    { id: 'ox-states', label: 'Oxidation States', color: '#ffbe0b', desc: 'Rules: Elements=0, O=-2 (usually), H=+1 (usually), sum=charge.' },
+                    { id: 'agents', label: 'Redox Agents', color: '#8338ec', desc: 'Oxidising agent gets reduced. Reducing agent gets oxidised.' },
+                    { id: 'electrolysis', label: 'Electrolysis', color: '#8338ec', desc: 'Using electricity to drive non-spontaneous reactions.' },
+                    { id: 'anode', label: 'Anode (+)', color: '#8338ec', parent: 'electrolysis', desc: 'Oxidation occurs. Anions lose electrons.' },
+                    { id: 'cathode', label: 'Cathode (-)', color: '#8338ec', parent: 'electrolysis', desc: 'Reduction occurs. Cations gain electrons.' },
+                    { id: 'faraday', label: "Faraday's Laws", color: '#8338ec', parent: 'electrolysis', desc: 'Q = It. Mass ∝ charge passed. m = (Q×M)/(n×F).' },
+                    { id: 'cells', label: 'Electrochemical Cells', color: '#ff006e', desc: 'Convert chemical energy to electrical (galvanic) or vice versa.' },
+                    { id: 'galvanic', label: 'Galvanic Cells', color: '#ff006e', parent: 'cells', desc: 'Spontaneous redox produces electricity. Anode negative.' }
+                ]
+            },
+            rates: {
+                center: { label: 'Rates & Equilibrium', color: '#00d4ff' },
+                nodes: [
+                    { id: 'rate', label: 'Rate of Reaction', color: '#ff006e', desc: 'Change in concentration per unit time. Rate = Δ[conc]/Δt.' },
+                    { id: 'factors', label: 'Factors Affecting Rate', color: '#00ff88', desc: 'Temperature, concentration, surface area, catalyst, pressure.' },
+                    { id: 'temp', label: 'Temperature ↑', color: '#00ff88', parent: 'factors', desc: 'More kinetic energy, more frequent/energetic collisions.' },
+                    { id: 'conc', label: 'Concentration ↑', color: '#00ff88', parent: 'factors', desc: 'More particles, more frequent collisions.' },
+                    { id: 'surface', label: 'Surface Area ↑', color: '#00ff88', parent: 'factors', desc: 'More exposed particles available for collision.' },
+                    { id: 'catalyst', label: 'Catalyst', color: '#00ff88', parent: 'factors', desc: 'Lowers activation energy, provides alternative pathway.' },
+                    { id: 'collision', label: 'Collision Theory', color: '#ffbe0b', desc: 'Particles must collide with correct orientation and E ≥ Eₐ.' },
+                    { id: 'activation', label: 'Activation Energy', color: '#ffbe0b', parent: 'collision', desc: 'Minimum energy required for reaction to occur.' },
+                    { id: 'equilibrium', label: 'Chemical Equilibrium', color: '#8338ec', desc: 'Dynamic: forward rate = reverse rate. No net change.' },
+                    { id: 'lechatelier', label: "Le Chatelier's", color: '#8338ec', parent: 'equilibrium', desc: 'System shifts to counteract any change imposed on it.' },
+                    { id: 'kc', label: 'Equilibrium Constant', color: '#8338ec', parent: 'equilibrium', desc: 'Kc = [products]ᵖ / [reactants]ʳ. Temperature dependent.' }
+                ]
+            },
+            gases: {
+                center: { label: 'Gas Laws', color: '#00d4ff' },
+                nodes: [
+                    { id: 'ideal', label: 'Ideal Gas Equation', color: '#ff006e', desc: 'PV = nRT. R = 8.314 J/mol·K or 0.0821 L·atm/mol·K.' },
+                    { id: 'boyle', label: "Boyle's Law", color: '#00ff88', desc: 'P₁V₁ = P₂V₂ at constant T. P ∝ 1/V.' },
+                    { id: 'charles', label: "Charles's Law", color: '#00ff88', desc: 'V₁/T₁ = V₂/T₂ at constant P. V ∝ T (in Kelvin).' },
+                    { id: 'gaylussac', label: "Gay-Lussac's Law", color: '#00ff88', desc: 'P₁/T₁ = P₂/T₂ at constant V. P ∝ T.' },
+                    { id: 'avogadro', label: "Avogadro's Law", color: '#00ff88', desc: 'V ∝ n at constant T and P. Equal volumes = equal moles.' },
+                    { id: 'stp', label: 'STP Conditions', color: '#ffbe0b', desc: '0°C (273 K), 1 atm. Molar volume = 22.4 L/mol.' },
+                    { id: 'kinetic', label: 'Kinetic Theory', color: '#8338ec', desc: 'Assumptions about ideal gas behaviour.' },
+                    { id: 'random', label: 'Random Motion', color: '#8338ec', parent: 'kinetic', desc: 'Particles in constant random motion.' },
+                    { id: 'elastic', label: 'Elastic Collisions', color: '#8338ec', parent: 'kinetic', desc: 'No energy lost in collisions.' },
+                    { id: 'no-forces', label: 'No Intermolecular Forces', color: '#8338ec', parent: 'kinetic', desc: 'Particles don\'t attract or repel each other.' },
+                    { id: 'negligible', label: 'Negligible Volume', color: '#8338ec', parent: 'kinetic', desc: 'Particle volume << container volume.' }
+                ]
+            },
+            thermo: {
+                center: { label: 'Thermochemistry', color: '#00d4ff' },
+                nodes: [
+                    { id: 'enthalpy', label: 'Enthalpy (H)', color: '#ff006e', desc: 'Heat content at constant pressure. ΔH = H(products) - H(reactants).' },
+                    { id: 'exothermic', label: 'Exothermic ΔH < 0', color: '#ff006e', parent: 'enthalpy', desc: 'Heat released to surroundings. Products lower energy.' },
+                    { id: 'endothermic', label: 'Endothermic ΔH > 0', color: '#ff006e', parent: 'enthalpy', desc: 'Heat absorbed from surroundings. Products higher energy.' },
+                    { id: 'standard', label: 'Standard Conditions', color: '#00ff88', desc: '298 K (25°C), 1 atm, 1 M solutions. Symbol: °' },
+                    { id: 'formation', label: 'ΔHf° Formation', color: '#00ff88', parent: 'standard', desc: 'Enthalpy change forming 1 mole from elements.' },
+                    { id: 'combustion', label: 'ΔHc° Combustion', color: '#00ff88', parent: 'standard', desc: 'Complete burning of 1 mole in excess oxygen.' },
+                    { id: 'hess', label: "Hess's Law", color: '#ffbe0b', desc: 'Total ΔH is independent of route taken.' },
+                    { id: 'hess-calc', label: 'ΔH = ΣΔHf(prod) - ΣΔHf(react)', color: '#ffbe0b', parent: 'hess', desc: 'Calculate using formation enthalpies.' },
+                    { id: 'bonds', label: 'Bond Energies', color: '#8338ec', desc: 'Energy to break 1 mole of bonds in gaseous molecules.' },
+                    { id: 'bond-calc', label: 'ΔH = Σ(broken) - Σ(formed)', color: '#8338ec', parent: 'bonds', desc: 'Breaking = positive, forming = negative.' },
+                    { id: 'calorimetry', label: 'Calorimetry', color: '#8338ec', desc: 'q = mcΔT. Measure heat changes experimentally.' }
+                ]
+            }
+        };
+
+        function initMindMaps() {
+            renderMindMap('atomic');
+        }
+
+        function renderMindMap(topicId) {
+            const data = mindmapData[topicId];
+            if (!data) return;
+            
+            const svg = document.getElementById('mindmapSvg');
+            svg.innerHTML = '';
+            
+            const width = 1000, height = 600;
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            const centerX = width / 2, centerY = height / 2;
+            
+            // Get parent nodes (no parent property)
+            const parentNodes = data.nodes.filter(n => !n.parent);
+            const childNodes = data.nodes.filter(n => n.parent);
+            
+            // Calculate positions for parent nodes in a circle - more space
+            const parentRadius = 200;
+            parentNodes.forEach((node, i) => {
+                const angle = (i / parentNodes.length) * 2 * Math.PI - Math.PI / 2;
+                node.x = centerX + Math.cos(angle) * parentRadius;
+                node.y = centerY + Math.sin(angle) * parentRadius;
+            });
+            
+            // Calculate positions for child nodes - spread them out more
+            childNodes.forEach(node => {
+                const parent = parentNodes.find(p => p.id === node.parent) || childNodes.find(p => p.id === node.parent);
+                if (parent) {
+                    const siblings = childNodes.filter(n => n.parent === node.parent);
+                    const idx = siblings.indexOf(node);
+                    const baseAngle = Math.atan2(parent.y - centerY, parent.x - centerX);
+                    const spreadAngle = 0.6; // Increased spread
+                    const childAngle = baseAngle + (idx - (siblings.length - 1) / 2) * spreadAngle;
+                    const childRadius = 100; // Increased distance
+                    node.x = parent.x + Math.cos(childAngle) * childRadius;
+                    node.y = parent.y + Math.sin(childAngle) * childRadius;
+                    
+                    // Keep nodes within bounds
+                    node.x = Math.max(60, Math.min(width - 60, node.x));
+                    node.y = Math.max(50, Math.min(height - 50, node.y));
+                }
+            });
+            
+            // Draw curved links from center to parents
+            parentNodes.forEach(node => {
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const dx = node.x - centerX;
+                const dy = node.y - centerY;
+                const ctrl1X = centerX + dx * 0.3;
+                const ctrl1Y = centerY + dy * 0.1;
+                const ctrl2X = centerX + dx * 0.7;
+                const ctrl2Y = centerY + dy * 0.9;
+                path.setAttribute('d', `M ${centerX} ${centerY} C ${ctrl1X} ${ctrl1Y}, ${ctrl2X} ${ctrl2Y}, ${node.x} ${node.y}`);
+                path.setAttribute('class', 'mindmap-link');
+                path.setAttribute('stroke', node.color);
+                path.setAttribute('stroke-width', '2.5');
+                svg.appendChild(path);
+            });
+            
+            // Draw links from parents to children
+            childNodes.forEach(node => {
+                const parent = parentNodes.find(p => p.id === node.parent) || childNodes.find(p => p.id === node.parent);
+                if (parent) {
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const midX = (parent.x + node.x) / 2;
+                    const midY = (parent.y + node.y) / 2;
+                    path.setAttribute('d', `M ${parent.x} ${parent.y} Q ${midX} ${midY} ${node.x} ${node.y}`);
+                    path.setAttribute('class', 'mindmap-link');
+                    path.setAttribute('stroke', node.color);
+                    path.setAttribute('stroke-opacity', '0.6');
+                    path.setAttribute('stroke-width', '1.5');
+                    svg.appendChild(path);
+                }
+            });
+            
+            // Draw center node
+            const centerGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            centerGroup.setAttribute('class', 'mindmap-node mindmap-center');
+            
+            const centerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            centerCircle.setAttribute('cx', centerX);
+            centerCircle.setAttribute('cy', centerY);
+            centerCircle.setAttribute('r', 55);
+            centerCircle.setAttribute('fill', data.center.color);
+            centerCircle.setAttribute('stroke', '#fff');
+            centerCircle.setAttribute('stroke-width', '3');
+            
+            const centerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            centerText.setAttribute('x', centerX);
+            centerText.setAttribute('y', centerY);
+            centerText.setAttribute('text-anchor', 'middle');
+            centerText.setAttribute('dominant-baseline', 'middle');
+            centerText.setAttribute('fill', '#fff');
+            centerText.setAttribute('font-size', '13px');
+            centerText.setAttribute('font-weight', '600');
+            centerText.textContent = data.center.label;
+            
+            centerGroup.appendChild(centerCircle);
+            centerGroup.appendChild(centerText);
+            svg.appendChild(centerGroup);
+            
+            // Draw parent nodes first (larger)
+            parentNodes.forEach(node => {
+                const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                group.setAttribute('class', 'mindmap-node');
+                group.style.cursor = 'pointer';
+                
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', node.x);
+                circle.setAttribute('cy', node.y);
+                circle.setAttribute('r', 42);
+                circle.setAttribute('fill', node.color);
+                circle.setAttribute('stroke', '#fff');
+                circle.setAttribute('stroke-width', '2');
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', node.x);
+                text.setAttribute('y', node.y);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'middle');
+                text.setAttribute('font-size', '10px');
+                text.setAttribute('fill', '#fff');
+                text.setAttribute('font-weight', '500');
+                
+                // Word wrap for labels
+                const words = node.label.split(' ');
+                if (words.length > 2 || node.label.length > 12) {
+                    const mid = Math.ceil(words.length / 2);
+                    const line1 = words.slice(0, mid).join(' ');
+                    const line2 = words.slice(mid).join(' ');
+                    
+                    const tspan1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                    tspan1.setAttribute('x', node.x);
+                    tspan1.setAttribute('dy', '-0.5em');
+                    tspan1.textContent = line1;
+                    
+                    const tspan2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                    tspan2.setAttribute('x', node.x);
+                    tspan2.setAttribute('dy', '1.2em');
+                    tspan2.textContent = line2;
+                    
+                    text.appendChild(tspan1);
+                    text.appendChild(tspan2);
+                } else {
+                    text.textContent = node.label;
+                }
+                
+                group.appendChild(circle);
+                group.appendChild(text);
+                group.addEventListener('click', () => showMindmapInfo(node));
+                svg.appendChild(group);
+            });
+            
+            // Draw child nodes (smaller)
+            childNodes.forEach(node => {
+                const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                group.setAttribute('class', 'mindmap-node');
+                group.style.cursor = 'pointer';
+                
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', node.x);
+                circle.setAttribute('cy', node.y);
+                circle.setAttribute('r', 32);
+                circle.setAttribute('fill', 'rgba(10, 14, 20, 0.8)');
+                circle.setAttribute('stroke', node.color);
+                circle.setAttribute('stroke-width', '2');
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', node.x);
+                text.setAttribute('y', node.y);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'middle');
+                text.setAttribute('font-size', '8px');
+                text.setAttribute('fill', '#fff');
+                
+                // Word wrap for labels
+                const words = node.label.split(' ');
+                if (words.length > 1 && node.label.length > 10) {
+                    const mid = Math.ceil(words.length / 2);
+                    const line1 = words.slice(0, mid).join(' ');
+                    const line2 = words.slice(mid).join(' ');
+                    
+                    const tspan1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                    tspan1.setAttribute('x', node.x);
+                    tspan1.setAttribute('dy', '-0.5em');
+                    tspan1.textContent = line1;
+                    
+                    const tspan2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                    tspan2.setAttribute('x', node.x);
+                    tspan2.setAttribute('dy', '1.1em');
+                    tspan2.textContent = line2;
+                    
+                    text.appendChild(tspan1);
+                    text.appendChild(tspan2);
+                } else {
+                    text.textContent = node.label;
+                }
+                
+                group.appendChild(circle);
+                group.appendChild(text);
+                group.addEventListener('click', () => showMindmapInfo(node));
+                svg.appendChild(group);
+            });
+            
+            // Hide info panel
+            document.getElementById('mindmapInfo').style.display = 'none';
+        }
+
+        function showMindmapInfo(node) {
+            const info = document.getElementById('mindmapInfo');
+            document.getElementById('mindmapInfoTitle').textContent = node.label;
+            document.getElementById('mindmapInfoDesc').textContent = node.desc;
+            info.style.display = 'block';
+        }
+
+        // ==================== STATS & PROGRESS ====================
+        let userProgress = {};
+        
+        function loadProgress() {
+            userProgress = JSON.parse(localStorage.getItem('chemProgress') || '{}');
+            // Update topics array with saved progress
+            topics.forEach(topic => {
+                if (userProgress[topic.id]) {
+                    topic.progress = userProgress[topic.id].progress || 0;
+                }
+            });
+            updateProgressDisplay();
+        }
+        
+        function saveProgress(topicId, progressValue) {
+            if (!userProgress[topicId]) userProgress[topicId] = {};
+            userProgress[topicId].progress = progressValue;
+            userProgress[topicId].lastViewed = Date.now();
+            localStorage.setItem('chemProgress', JSON.stringify(userProgress));
+            
+            // Update topic in array
+            const topic = topics.find(t => t.id === topicId);
+            if (topic) topic.progress = progressValue;
+            
+            updateProgressDisplay();
+        }
+        
+        function updateProgressDisplay() {
+            const totalProgress = topics.reduce((sum, t) => sum + (t.progress || 0), 0);
+            const avgProgress = Math.round(totalProgress / topics.length);
+            const topicsStarted = topics.filter(t => t.progress > 0).length;
+            
+            // Update dashboard progress ring
+            const circumference = 2 * Math.PI * 52;
+            const offset = circumference - (avgProgress / 100) * circumference;
+            const progressCircle = document.getElementById('progressCircle');
+            if (progressCircle) {
+                progressCircle.setAttribute('stroke-dashoffset', offset);
+            }
+            const progressPercent = document.getElementById('progressPercent');
+            if (progressPercent) {
+                progressPercent.textContent = avgProgress + '%';
+            }
+            const topicsCompleted = document.getElementById('topicsCompleted');
+            if (topicsCompleted) {
+                topicsCompleted.textContent = topicsStarted;
+            }
+        }
+        
+        function updateStats() { document.getElementById('streakCount').textContent = streak; document.getElementById('xpCount').textContent = xp; }
+        function addXP(amount) { xp += amount; localStorage.setItem('xp', xp); updateStats(); }
+
+        // ==================== EXAM COUNTDOWN ====================
+        function initExamCountdown() {
+            // LC Chemistry typically in June
+            const examDate = new Date('2025-06-11'); // Approximate LC date
+            const today = new Date();
+            const diffTime = examDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            document.getElementById('daysUntilExam').textContent = diffDays > 0 ? diffDays : 'Exam Passed';
+            document.getElementById('examDate').textContent = examDate.toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        // ==================== POMODORO TIMER ====================
+        let pomodoroInterval = null;
+        let pomodoroTime = 25 * 60;
+        let pomodoroRunning = false;
+        let isBreak = false;
+
+        function togglePomodoro() {
+            if (pomodoroRunning) {
+                clearInterval(pomodoroInterval);
+                document.getElementById('pomodoroStart').textContent = 'Resume';
+            } else {
+                pomodoroInterval = setInterval(updatePomodoro, 1000);
+                document.getElementById('pomodoroStart').textContent = 'Pause';
+            }
+            pomodoroRunning = !pomodoroRunning;
+        }
+
+        function updatePomodoro() {
+            if (pomodoroTime > 0) {
+                pomodoroTime--;
+                const mins = Math.floor(pomodoroTime / 60);
+                const secs = pomodoroTime % 60;
+                document.getElementById('pomodoroDisplay').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            } else {
+                clearInterval(pomodoroInterval);
+                pomodoroRunning = false;
+                if (!isBreak) {
+                    isBreak = true;
+                    pomodoroTime = 5 * 60;
+                    document.getElementById('pomodoroStatus').textContent = '☕ Break Time!';
+                    document.getElementById('pomodoroStart').textContent = 'Start Break';
+                    addXP(25);
+                } else {
+                    isBreak = false;
+                    pomodoroTime = 25 * 60;
+                    document.getElementById('pomodoroStatus').textContent = 'Focus Time';
+                    document.getElementById('pomodoroStart').textContent = 'Start';
+                }
+                document.getElementById('pomodoroDisplay').textContent = `${Math.floor(pomodoroTime / 60)}:00`;
+                if (Notification.permission === 'granted') {
+                    new Notification('Pomodoro Complete!', { body: isBreak ? 'Time for a break!' : 'Break over, back to studying!' });
+                }
+            }
+        }
+
+        function resetPomodoro() {
+            clearInterval(pomodoroInterval);
+            pomodoroRunning = false;
+            isBreak = false;
+            pomodoroTime = 25 * 60;
+            document.getElementById('pomodoroDisplay').textContent = '25:00';
+            document.getElementById('pomodoroStatus').textContent = 'Focus Time';
+            document.getElementById('pomodoroStart').textContent = 'Start';
+        }
+
+        // ==================== DATA TABLES ====================
+        const dataTables = {
+            electrochemical: {
+                title: 'Standard Electrode Potentials (E°)',
+                headers: ['Half-Reaction', 'E° (V)'],
+                data: [
+                    ['Li⁺ + e⁻ → Li', '-3.04'],
+                    ['K⁺ + e⁻ → K', '-2.93'],
+                    ['Ca²⁺ + 2e⁻ → Ca', '-2.87'],
+                    ['Na⁺ + e⁻ → Na', '-2.71'],
+                    ['Mg²⁺ + 2e⁻ → Mg', '-2.37'],
+                    ['Al³⁺ + 3e⁻ → Al', '-1.66'],
+                    ['Zn²⁺ + 2e⁻ → Zn', '-0.76'],
+                    ['Fe²⁺ + 2e⁻ → Fe', '-0.44'],
+                    ['Ni²⁺ + 2e⁻ → Ni', '-0.26'],
+                    ['Sn²⁺ + 2e⁻ → Sn', '-0.14'],
+                    ['Pb²⁺ + 2e⁻ → Pb', '-0.13'],
+                    ['2H⁺ + 2e⁻ → H₂', '0.00'],
+                    ['Cu²⁺ + 2e⁻ → Cu', '+0.34'],
+                    ['I₂ + 2e⁻ → 2I⁻', '+0.54'],
+                    ['Ag⁺ + e⁻ → Ag', '+0.80'],
+                    ['Br₂ + 2e⁻ → 2Br⁻', '+1.07'],
+                    ['Cl₂ + 2e⁻ → 2Cl⁻', '+1.36'],
+                    ['Au³⁺ + 3e⁻ → Au', '+1.50'],
+                    ['F₂ + 2e⁻ → 2F⁻', '+2.87']
+                ],
+                note: 'More positive E° = stronger oxidising agent. More negative E° = stronger reducing agent.'
+            },
+            bondEnergies: {
+                title: 'Average Bond Energies',
+                headers: ['Bond', 'Energy (kJ/mol)', 'Bond', 'Energy (kJ/mol)'],
+                data: [
+                    ['H-H', '436', 'C-C', '347'],
+                    ['H-C', '413', 'C=C', '612'],
+                    ['H-N', '391', 'C≡C', '838'],
+                    ['H-O', '463', 'C-O', '358'],
+                    ['H-F', '568', 'C=O', '805'],
+                    ['H-Cl', '432', 'C-N', '286'],
+                    ['H-Br', '366', 'C≡N', '890'],
+                    ['H-I', '298', 'N-N', '158'],
+                    ['O-O', '146', 'N=N', '418'],
+                    ['O=O', '498', 'N≡N', '945'],
+                    ['Cl-Cl', '243', 'C-Cl', '346'],
+                    ['Br-Br', '193', 'C-Br', '290']
+                ],
+                note: 'Bond breaking is endothermic (+). Bond forming is exothermic (-).'
+            },
+            enthalpies: {
+                title: 'Standard Enthalpies of Formation (ΔHf°)',
+                headers: ['Compound', 'ΔHf° (kJ/mol)', 'Compound', 'ΔHf° (kJ/mol)'],
+                data: [
+                    ['H₂O(l)', '-286', 'CO₂(g)', '-394'],
+                    ['H₂O(g)', '-242', 'CO(g)', '-111'],
+                    ['HCl(g)', '-92', 'CH₄(g)', '-75'],
+                    ['HBr(g)', '-36', 'C₂H₆(g)', '-85'],
+                    ['NH₃(g)', '-46', 'C₂H₄(g)', '+52'],
+                    ['NO(g)', '+90', 'C₂H₂(g)', '+227'],
+                    ['NO₂(g)', '+34', 'CH₃OH(l)', '-239'],
+                    ['N₂O(g)', '+82', 'C₂H₅OH(l)', '-278'],
+                    ['SO₂(g)', '-297', 'C₆H₁₂O₆(s)', '-1271'],
+                    ['SO₃(g)', '-396', 'NaCl(s)', '-411']
+                ],
+                note: 'Elements in standard states have ΔHf° = 0 by definition.'
+            },
+            constants: {
+                title: 'Important Constants & Values',
+                headers: ['Constant', 'Value'],
+                data: [
+                    ['Avogadro constant (Nₐ)', '6.022 × 10²³ mol⁻¹'],
+                    ['Gas constant (R)', '8.314 J mol⁻¹ K⁻¹'],
+                    ['Gas constant (R)', '0.0821 L atm mol⁻¹ K⁻¹'],
+                    ['Faraday constant (F)', '96,500 C mol⁻¹'],
+                    ['Molar volume at STP', '22.4 L mol⁻¹'],
+                    ['Standard pressure', '101.325 kPa (1 atm)'],
+                    ['Standard temperature', '273 K (0°C)'],
+                    ['Planck constant (h)', '6.626 × 10⁻³⁴ J s'],
+                    ['Speed of light (c)', '3.00 × 10⁸ m s⁻¹'],
+                    ['Specific heat of water', '4.18 J g⁻¹ °C⁻¹'],
+                    ['Density of water', '1.00 g cm⁻³'],
+                    ['Ionic product of water (Kw)', '1.0 × 10⁻¹⁴ mol² L⁻² at 25°C']
+                ],
+                note: 'These values are commonly given on the exam data sheet.'
+            },
+            indicators: {
+                title: 'Acid-Base Indicators',
+                headers: ['Indicator', 'pH Range', 'Acid Colour', 'Base Colour'],
+                data: [
+                    ['Methyl orange', '3.1 - 4.4', 'Red', 'Yellow'],
+                    ['Methyl red', '4.4 - 6.2', 'Red', 'Yellow'],
+                    ['Bromothymol blue', '6.0 - 7.6', 'Yellow', 'Blue'],
+                    ['Litmus', '5.0 - 8.0', 'Red', 'Blue'],
+                    ['Phenolphthalein', '8.2 - 10.0', 'Colourless', 'Pink'],
+                    ['Universal indicator', '1 - 14', 'Red/Orange', 'Blue/Purple']
+                ],
+                note: 'Use methyl orange for strong acid/weak base. Use phenolphthalein for weak acid/strong base.'
+            }
+        };
+
+        function initDataTables() {
+            renderDataTable('electrochemical');
+            document.querySelectorAll('[data-table]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('[data-table]').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderDataTable(btn.dataset.table);
+                });
+            });
+        }
+
+        function renderDataTable(tableId) {
+            const table = dataTables[tableId];
+            let html = `<h3 style="margin-bottom: 1rem; color: var(--accent-cyan);">${table.title}</h3>`;
+            html += `<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse;">`;
+            html += `<thead><tr>${table.headers.map(h => `<th style="text-align: left; padding: 0.75rem; background: var(--bg-tertiary); border-bottom: 2px solid var(--accent-cyan); font-weight: 600;">${h}</th>`).join('')}</tr></thead>`;
+            html += `<tbody>`;
+            table.data.forEach((row, i) => {
+                html += `<tr style="background: ${i % 2 === 0 ? 'var(--bg-secondary)' : 'transparent'};">`;
+                row.forEach(cell => {
+                    html += `<td style="padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--glass-border); font-family: 'Space Mono', monospace; font-size: 0.85rem;">${cell}</td>`;
+                });
+                html += `</tr>`;
+            });
+            html += `</tbody></table></div>`;
+            html += `<div style="margin-top: 1rem; padding: 1rem; background: rgba(0, 212, 255, 0.1); border-left: 3px solid var(--accent-cyan); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 0.85rem; color: var(--text-secondary);">💡 ${table.note}</div>`;
+            document.getElementById('dataTableContent').innerHTML = html;
+        }
+
+        // ==================== GLOSSARY ====================
+        const glossaryTerms = [
+            { term: 'Atom', def: 'The smallest particle of an element that retains its chemical properties.', cat: 'atomic' },
+            { term: 'Atomic Number', def: 'The number of protons in the nucleus of an atom.', cat: 'atomic' },
+            { term: 'Mass Number', def: 'The total number of protons and neutrons in an atom.', cat: 'atomic' },
+            { term: 'Isotope', def: 'Atoms of the same element with different numbers of neutrons.', cat: 'atomic' },
+            { term: 'Ion', def: 'An atom or group of atoms with a net electric charge due to loss or gain of electrons.', cat: 'atomic' },
+            { term: 'Electron Configuration', def: 'The arrangement of electrons in an atom\'s orbitals.', cat: 'atomic' },
+            { term: 'Ground State', def: 'The lowest energy state of an atom where electrons occupy the lowest available energy levels.', cat: 'atomic' },
+            { term: 'Excited State', def: 'A state where an electron has absorbed energy and moved to a higher energy level.', cat: 'atomic' },
+            { term: 'Ionic Bond', def: 'A bond formed by the electrostatic attraction between oppositely charged ions.', cat: 'bonding' },
+            { term: 'Covalent Bond', def: 'A bond formed by the sharing of electron pairs between atoms.', cat: 'bonding' },
+            { term: 'Electronegativity', def: 'A measure of the ability of an atom to attract shared electrons in a covalent bond.', cat: 'bonding' },
+            { term: 'Polar Bond', def: 'A covalent bond where electrons are unequally shared due to different electronegativities.', cat: 'bonding' },
+            { term: 'Metallic Bond', def: 'Bonding in metals involving a lattice of positive ions surrounded by delocalised electrons.', cat: 'bonding' },
+            { term: 'Van der Waals Forces', def: 'Weak intermolecular forces caused by temporary dipoles.', cat: 'bonding' },
+            { term: 'Hydrogen Bond', def: 'A strong intermolecular force between H bonded to N, O, or F and a lone pair on another N, O, or F.', cat: 'bonding' },
+            { term: 'Alkane', def: 'A saturated hydrocarbon with only single C-C bonds. General formula: CₙH₂ₙ₊₂', cat: 'organic' },
+            { term: 'Alkene', def: 'An unsaturated hydrocarbon containing a C=C double bond. General formula: CₙH₂ₙ', cat: 'organic' },
+            { term: 'Functional Group', def: 'A group of atoms responsible for the characteristic reactions of a compound.', cat: 'organic' },
+            { term: 'Homologous Series', def: 'A family of compounds with the same functional group and general formula.', cat: 'organic' },
+            { term: 'Isomers', def: 'Compounds with the same molecular formula but different structural arrangements.', cat: 'organic' },
+            { term: 'Addition Reaction', def: 'A reaction where atoms are added across a multiple bond.', cat: 'organic' },
+            { term: 'Substitution Reaction', def: 'A reaction where one atom or group is replaced by another.', cat: 'organic' },
+            { term: 'Polymerisation', def: 'The process of joining many small monomer molecules to form a large polymer.', cat: 'organic' },
+            { term: 'Acid', def: 'A substance that donates protons (H⁺) or accepts electron pairs.', cat: 'acids' },
+            { term: 'Base', def: 'A substance that accepts protons (H⁺) or donates electron pairs.', cat: 'acids' },
+            { term: 'pH', def: 'A measure of hydrogen ion concentration: pH = -log₁₀[H⁺]', cat: 'acids' },
+            { term: 'Buffer Solution', def: 'A solution that resists changes in pH when small amounts of acid or base are added.', cat: 'acids' },
+            { term: 'Neutralisation', def: 'The reaction between an acid and a base to form salt and water.', cat: 'acids' },
+            { term: 'Titration', def: 'A technique to determine the concentration of a solution by reacting it with a solution of known concentration.', cat: 'acids' },
+            { term: 'Oxidation', def: 'Loss of electrons, gain of oxygen, or increase in oxidation state.', cat: 'redox' },
+            { term: 'Reduction', def: 'Gain of electrons, loss of oxygen, or decrease in oxidation state.', cat: 'redox' },
+            { term: 'Oxidising Agent', def: 'A substance that causes oxidation by accepting electrons (it gets reduced).', cat: 'redox' },
+            { term: 'Reducing Agent', def: 'A substance that causes reduction by donating electrons (it gets oxidised).', cat: 'redox' },
+            { term: 'Electrolysis', def: 'Using electrical energy to cause a non-spontaneous chemical reaction.', cat: 'redox' },
+            { term: 'Electrode', def: 'A conductor through which electricity enters or leaves an electrolyte.', cat: 'redox' },
+            { term: 'Anode', def: 'The electrode where oxidation occurs.', cat: 'redox' },
+            { term: 'Cathode', def: 'The electrode where reduction occurs.', cat: 'redox' },
+            { term: 'Mole', def: 'The amount of substance containing 6.022 × 10²³ particles.', cat: 'atomic' },
+            { term: 'Molar Mass', def: 'The mass of one mole of a substance, expressed in g/mol.', cat: 'atomic' },
+            { term: 'Enthalpy', def: 'The heat content of a system at constant pressure.', cat: 'redox' },
+            { term: 'Exothermic', def: 'A reaction that releases heat to the surroundings (ΔH < 0).', cat: 'redox' },
+            { term: 'Endothermic', def: 'A reaction that absorbs heat from the surroundings (ΔH > 0).', cat: 'redox' },
+            { term: 'Activation Energy', def: 'The minimum energy required for a reaction to occur.', cat: 'redox' },
+            { term: 'Catalyst', def: 'A substance that increases reaction rate without being consumed, by lowering activation energy.', cat: 'redox' },
+            { term: 'Equilibrium', def: 'A state where the rates of forward and reverse reactions are equal.', cat: 'redox' },
+            { term: 'Le Chatelier\'s Principle', def: 'When a system at equilibrium is disturbed, it shifts to counteract the change.', cat: 'redox' }
+        ].sort((a, b) => a.term.localeCompare(b.term));
+
+        let currentGlossaryCategory = 'all';
+
+        function initGlossary() {
+            renderGlossary(glossaryTerms);
+        }
+
+        function renderGlossary(terms) {
+            const html = terms.map(t => `
+                <div style="padding: 1rem; border-bottom: 1px solid var(--glass-border);">
+                    <div style="font-weight: 600; color: var(--accent-cyan); margin-bottom: 0.25rem;">${t.term}</div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;">${t.def}</div>
+                    <span style="font-size: 0.7rem; background: var(--bg-tertiary); padding: 0.2rem 0.5rem; border-radius: 10px; color: var(--text-muted); margin-top: 0.5rem; display: inline-block;">${t.cat}</span>
+                </div>
+            `).join('');
+            document.getElementById('glossaryContent').innerHTML = html || '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No terms found.</p>';
+        }
+
+        function filterGlossary(query) {
+            const filtered = glossaryTerms.filter(t => 
+                (currentGlossaryCategory === 'all' || t.cat === currentGlossaryCategory) &&
+                (t.term.toLowerCase().includes(query.toLowerCase()) || t.def.toLowerCase().includes(query.toLowerCase()))
+            );
+            renderGlossary(filtered);
+        }
+
+        function filterGlossaryCategory(cat) {
+            currentGlossaryCategory = cat;
+            document.querySelectorAll('[data-glossary]').forEach(b => b.classList.remove('active'));
+            document.querySelector(`[data-glossary="${cat}"]`).classList.add('active');
+            filterGlossary(document.getElementById('glossarySearch').value);
+        }
+
+        // ==================== EXAM MODE ====================
+        let examQuestions = [];
+        let examCurrentQ = 0;
+        let examAnswers = [];
+        let examTimerInterval = null;
+        let examTimeRemaining = 0;
+        let examStartTime = null;
+
+        function startExamMode() {
+            const numQ = parseInt(document.getElementById('examQuestions').value);
+            const timeLimit = parseInt(document.getElementById('examTime').value);
+            
+            // Gather all quiz questions
+            examQuestions = Object.values(quizData).flat().sort(() => Math.random() - 0.5).slice(0, numQ);
+            examCurrentQ = 0;
+            examAnswers = new Array(numQ).fill(null);
+            examTimeRemaining = timeLimit * 60;
+            examStartTime = Date.now();
+            
+            document.getElementById('examSetup').style.display = 'none';
+            document.getElementById('examInProgress').style.display = 'block';
+            document.getElementById('examResults').style.display = 'none';
+            
+            if (timeLimit > 0) {
+                examTimerInterval = setInterval(updateExamTimer, 1000);
+            } else {
+                document.getElementById('examTimer').textContent = '∞';
+            }
+            
+            showExamQuestion();
+        }
+
+        function updateExamTimer() {
+            if (examTimeRemaining > 0) {
+                examTimeRemaining--;
+                const mins = Math.floor(examTimeRemaining / 60);
+                const secs = examTimeRemaining % 60;
+                document.getElementById('examTimer').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                if (examTimeRemaining <= 60) {
+                    document.getElementById('examTimer').style.color = 'var(--accent-magenta)';
+                }
+            } else {
+                clearInterval(examTimerInterval);
+                finishExam();
+            }
+        }
+
+        function showExamQuestion() {
+            const q = examQuestions[examCurrentQ];
+            const total = examQuestions.length;
+            
+            document.getElementById('examQuestionNum').textContent = `${examCurrentQ + 1} of ${total}`;
+            document.getElementById('examAnswered').textContent = `${examAnswers.filter(a => a !== null).length} / ${total}`;
+            
+            const letters = ['A', 'B', 'C', 'D'];
+            document.getElementById('examQuestionContent').innerHTML = `
+                <div style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 1.5rem;">${q.q}</div>
+                <div class="answers">
+                    ${q.options.map((opt, i) => `
+                        <div class="answer-option ${examAnswers[examCurrentQ] === i ? 'selected' : ''}" data-index="${i}" onclick="selectExamAnswer(${i})">
+                            <span class="answer-letter">${letters[i]}</span>
+                            <span>${opt}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            document.getElementById('examNextBtn').textContent = examCurrentQ === total - 1 ? 'Finish Exam' : 'Next Question →';
+        }
+
+        function selectExamAnswer(index) {
+            examAnswers[examCurrentQ] = index;
+            document.querySelectorAll('#examQuestionContent .answer-option').forEach((opt, i) => {
+                opt.classList.toggle('selected', i === index);
+            });
+            document.getElementById('examAnswered').textContent = `${examAnswers.filter(a => a !== null).length} / ${examQuestions.length}`;
+        }
+
+        function nextExamQuestion() {
+            if (examCurrentQ < examQuestions.length - 1) {
+                examCurrentQ++;
+                showExamQuestion();
+            } else {
+                finishExam();
+            }
+        }
+
+        function endExamEarly() {
+            if (confirm('Are you sure you want to end the exam? Unanswered questions will be marked incorrect.')) {
+                finishExam();
+            }
+        }
+
+        function finishExam() {
+            clearInterval(examTimerInterval);
+            
+            let correct = 0;
+            examQuestions.forEach((q, i) => {
+                if (examAnswers[i] === q.correct) correct++;
+            });
+            
+            const percent = Math.round((correct / examQuestions.length) * 100);
+            const timeSpent = Math.floor((Date.now() - examStartTime) / 1000);
+            const mins = Math.floor(timeSpent / 60);
+            const secs = timeSpent % 60;
+            
+            document.getElementById('examInProgress').style.display = 'none';
+            document.getElementById('examResults').style.display = 'block';
+            
+            document.getElementById('examFinalScore').textContent = `${percent}%`;
+            document.getElementById('examScoreLabel').textContent = `${correct} out of ${examQuestions.length} correct`;
+            document.getElementById('examCorrectCount').textContent = correct;
+            document.getElementById('examWrongCount').textContent = examQuestions.length - correct;
+            document.getElementById('examTimeSpent').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            
+            // Calculate grade
+            let grade = 'H8';
+            if (percent >= 90) grade = 'H1';
+            else if (percent >= 80) grade = 'H2';
+            else if (percent >= 70) grade = 'H3';
+            else if (percent >= 60) grade = 'H4';
+            else if (percent >= 50) grade = 'H5';
+            else if (percent >= 40) grade = 'H6';
+            else if (percent >= 30) grade = 'H7';
+            
+            document.getElementById('examGrade').innerHTML = `
+                <div style="font-size: 0.9rem; opacity: 0.8;">Predicted Grade</div>
+                <div style="font-size: 2.5rem; font-weight: 700;">${grade}</div>
+            `;
+            
+            addXP(correct * 5 + (percent >= 70 ? 50 : 0));
+        }
+
+        function resetExamMode() {
+            document.getElementById('examSetup').style.display = 'block';
+            document.getElementById('examResults').style.display = 'none';
+            document.getElementById('examTimer').style.color = 'var(--accent-cyan)';
+        }
+
+        function reviewExamAnswers() {
+            // Show all questions with correct answers highlighted
+            alert('Review feature coming soon! For now, retake the exam and note which topics need more practice.');
+        }
+
+        // ==================== KEYBOARD ====================
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('flashcards').classList.contains('active')) { if (e.key === ' ' || e.key === 'Enter') { document.getElementById('flashcard').click(); e.preventDefault(); } if (e.key === 'ArrowLeft') document.getElementById('prevCard').click(); if (e.key === 'ArrowRight') document.getElementById('nextCard').click(); }
+            if (e.key === 'Escape') document.getElementById('elementModal').classList.remove('active');
+        });
+
+        // ==================== PWA SERVICE WORKER ====================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('EspañolMaster LC: Service Worker registered', reg.scope))
+                    .catch(err => console.log('EspañolMaster LC: SW registration failed', err));
+            });
+        }
+    </script>
+</body>
+</html>
