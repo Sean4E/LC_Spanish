@@ -1207,140 +1207,169 @@
         };
 
         const topics = [
-            { id: 'atomic', icon: '⚛️', title: 'Atomic Structure', desc: 'Atoms, subatomic particles, electron configuration, isotopes', lessons: 8, questions: 45, progress: 0, content: '<h2>Atomic Structure</h2><h3>The Atom</h3><p>An atom is the smallest particle of an element that retains the chemical properties of that element. Atoms consist of three types of subatomic particles:</p><ul><li><strong>Protons</strong> - positively charged particles found in the nucleus</li><li><strong>Neutrons</strong> - neutral particles found in the nucleus</li><li><strong>Electrons</strong> - negatively charged particles orbiting the nucleus</li></ul><div class="key-point"><div class="key-point-title">Key Definition</div><p><strong>Atomic Number (Z)</strong> = Number of protons<br><strong>Mass Number (A)</strong> = Protons + Neutrons</p></div><h3>Isotopes</h3><p>Isotopes are atoms of the same element with the same number of protons but different numbers of neutrons.</p><h3>Electron Configuration</h3><p>Electrons are arranged in energy levels (shells) around the nucleus. The maximum number of electrons in each shell is given by 2n².</p>' },
-            { id: 'bonding', icon: '🔗', title: 'Chemical Bonding', desc: 'Ionic, covalent, metallic bonding, electronegativity, shapes', lessons: 10, questions: 52, progress: 0, content: '<h2>Chemical Bonding</h2><h3>Ionic Bonding</h3><p>Ionic bonds form between metals and non-metals through the transfer of electrons.</p><div class="key-point"><div class="key-point-title">Properties of Ionic Compounds</div><ul><li>High melting and boiling points</li><li>Conduct electricity when molten or dissolved</li><li>Form crystalline lattice structures</li></ul></div><h3>Covalent Bonding</h3><p>Covalent bonds form between non-metals through the sharing of electron pairs.</p><h3>Electronegativity</h3><p>Electronegativity is the ability of an atom to attract shared electrons towards itself in a covalent bond.</p>' },
-            { id: 'stoichiometry', icon: '⚖️', title: 'Stoichiometry & The Mole', desc: 'Mole concept, calculations, limiting reagents, yields', lessons: 12, questions: 68, progress: 0, content: '<h2>Stoichiometry & The Mole</h2><h3>The Mole Concept</h3><p>The mole is the SI unit for amount of substance. One mole contains exactly 6.022 × 10²³ particles (Avogadro\'s number).</p><div class="key-point"><div class="key-point-title">Key Formulae</div><p>Number of moles (n) = mass (m) / molar mass (M)<br>Number of moles (n) = number of particles / 6.022 × 10²³<br>Number of moles (n) = volume (L) / 22.4 (at STP for gases)</p></div>' },
-            { id: 'organic', icon: '🧬', title: 'Organic Chemistry', desc: 'Hydrocarbons, functional groups, reactions, polymers', lessons: 15, questions: 85, progress: 0, content: '<h2>Organic Chemistry</h2><h3>Hydrocarbons</h3><div class="key-point"><div class="key-point-title">Homologous Series</div><ul><li><strong>Alkanes</strong> (CₙH₂ₙ₊₂): Single bonds only</li><li><strong>Alkenes</strong> (CₙH₂ₙ): Contains C=C double bond</li><li><strong>Alkynes</strong> (CₙH₂ₙ₋₂): Contains C≡C triple bond</li></ul></div><h3>Functional Groups</h3><ul><li><strong>Alcohols (-OH)</strong></li><li><strong>Aldehydes (-CHO)</strong></li><li><strong>Ketones (C=O)</strong></li><li><strong>Carboxylic acids (-COOH)</strong></li><li><strong>Esters (-COO-)</strong></li></ul>' },
-            { id: 'acids', icon: '🧫', title: 'Acids & Bases', desc: 'pH, neutralisation, titrations, buffer solutions', lessons: 9, questions: 55, progress: 0, content: '<h2>Acids & Bases</h2><div class="key-point"><div class="key-point-title">Brønsted-Lowry Definition</div><p><strong>Acid:</strong> Proton (H⁺) donor<br><strong>Base:</strong> Proton (H⁺) acceptor</p></div><h3>The pH Scale</h3><p>pH = -log₁₀[H⁺]</p><ul><li>pH < 7: Acidic</li><li>pH = 7: Neutral</li><li>pH > 7: Basic/alkaline</li></ul><h3>Neutralisation</h3><p>Acid + Base → Salt + Water</p>' },
-            { id: 'redox', icon: '🔋', title: 'Electrochemistry', desc: 'Oxidation, reduction, electrochemical cells, electrolysis', lessons: 11, questions: 48, progress: 0, content: '<h2>Electrochemistry</h2><div class="key-point"><div class="key-point-title">Remember: OIL RIG</div><p><strong>O</strong>xidation <strong>I</strong>s <strong>L</strong>oss (of electrons)<br><strong>R</strong>eduction <strong>I</strong>s <strong>G</strong>ain (of electrons)</p></div><h3>Electrolysis</h3><p>Electrolysis uses electrical energy to drive a non-spontaneous reaction.</p><ul><li>Oxidation occurs at the anode (positive)</li><li>Reduction occurs at the cathode (negative)</li></ul>' },
-            { id: 'rates', icon: '⏱️', title: 'Rates & Equilibrium', desc: 'Reaction rates, factors affecting rate, Le Chatelier', lessons: 10, questions: 42, progress: 0, content: '<h2>Rates of Reaction & Equilibrium</h2><h3>Factors Affecting Rate</h3><ol><li><strong>Temperature:</strong> Higher = faster</li><li><strong>Concentration:</strong> Higher = faster</li><li><strong>Surface area:</strong> Greater = faster</li><li><strong>Catalyst:</strong> Provides alternative pathway</li><li><strong>Pressure:</strong> (for gases) Higher = faster</li></ol><div class="key-point"><div class="key-point-title">Le Chatelier\'s Principle</div><p>When a system at equilibrium is disturbed, it will shift to counteract the change.</p></div>' },
-            { id: 'gases', icon: '💨', title: 'Gases', desc: 'Gas laws, ideal gas equation, kinetic theory', lessons: 7, questions: 38, progress: 0, content: '<h2>Gases</h2><div class="key-point"><div class="key-point-title">Ideal Gas Equation</div><p><strong>PV = nRT</strong></p><ul><li>P = Pressure</li><li>V = Volume</li><li>n = Moles</li><li>R = Gas constant (8.314 J/mol·K)</li><li>T = Temperature (Kelvin)</li></ul></div><p>At STP (0°C, 1 atm), one mole of any ideal gas occupies 22.4 L</p>' },
-            { id: 'thermo', icon: '🔥', title: 'Thermochemistry', desc: 'Enthalpy, Hess\'s law, bond energies, calorimetry', lessons: 8, questions: 40, progress: 0, content: '<h2>Thermochemistry</h2><div class="key-point"><div class="key-point-title">Exothermic vs Endothermic</div><p><strong>Exothermic (ΔH < 0):</strong> Heat released<br><strong>Endothermic (ΔH > 0):</strong> Heat absorbed</p></div><h3>Heat Energy</h3><p><strong>q = mcΔT</strong></p><ul><li>q = heat energy (J)</li><li>m = mass (g)</li><li>c = specific heat capacity</li><li>ΔT = temperature change</li></ul>' },
-            { id: 'environmental', icon: '🌍', title: 'Environmental Chemistry', desc: 'Water treatment, atmosphere, pollution, green chemistry', lessons: 6, questions: 32, progress: 0, content: '<h2>Environmental Chemistry</h2><h3>Water Treatment</h3><ol><li>Screening</li><li>Settling/Sedimentation</li><li>Filtration</li><li>Chlorination</li><li>Fluoridation</li><li>pH adjustment</li></ol><h3>Pollution</h3><ul><li><strong>Acid rain:</strong> Caused by SO₂ and NOₓ</li><li><strong>Greenhouse effect:</strong> CO₂, CH₄, N₂O</li><li><strong>Ozone depletion:</strong> CFCs</li></ul>' }
+            { id: 'gramatica', icon: '📚', title: 'Gramática', desc: 'Verbos, tiempos, subjuntivo, concordancia', lessons: 18, questions: 70, progress: 0, content: '<h2>Gramática</h2><h3>Los Tiempos Verbales</h3><div class="key-point"><div class="key-point-title">Tiempos Principales</div><ul><li><strong>Presente:</strong> Hablo, como, vivo</li><li><strong>Pretérito:</strong> Hablé, comí, viví</li><li><strong>Imperfecto:</strong> Hablaba, comía, vivía</li><li><strong>Futuro:</strong> Hablaré, comeré, viviré</li><li><strong>Condicional:</strong> Hablaría, comería, viviría</li></ul></div><h3>El Subjuntivo</h3><p>Se usa para expresar deseos, emociones, dudas, y situaciones hipotéticas.</p>' },
+            { id: 'vocabulario', icon: '📕', title: 'Vocabulario', desc: 'Palabras, frases, expresiones idiomáticas', lessons: 15, questions: 60, progress: 0, content: '<h2>Vocabulario</h2><h3>Temas Importantes</h3><div class="key-point"><div class="key-point-title">Categorías</div><ul><li>La familia y relaciones</li><li>El trabajo y profesiones</li><li>Los viajes y vacaciones</li><li>La salud y el cuerpo</li><li>El medio ambiente</li><li>La tecnología</li></ul></div>' },
+            { id: 'comprension', icon: '📖', title: 'Comprensión Lectora', desc: 'Lectura, análisis, inferencia', lessons: 10, questions: 50, progress: 0, content: '<h2>Comprensión Lectora</h2><h3>Estrategias</h3><div class="key-point"><div class="key-point-title">Técnicas</div><ul><li>Leer el texto rápidamente primero</li><li>Identificar palabras clave</li><li>Buscar la idea principal</li><li>Responder con tus propias palabras</li></ul></div>' },
+            { id: 'oral', icon: '🗣️', title: 'Examen Oral', desc: 'Conversación, presentación, roleplay', lessons: 10, questions: 40, progress: 0, content: '<h2>Examen Oral</h2><h3>Secciones</h3><div class="key-point"><div class="key-point-title">Estructura</div><ul><li><strong>Conversación general:</strong> Tu vida, intereses, opiniones</li><li><strong>Presentación:</strong> Tema preparado</li><li><strong>Roleplay:</strong> Situación práctica</li><li><strong>Imagen:</strong> Descripción de una foto</li></ul></div>' },
+            { id: 'auditiva', icon: '👂', title: 'Comprensión Auditiva', desc: 'Escuchar, entender, responder', lessons: 8, questions: 45, progress: 0, content: '<h2>Comprensión Auditiva</h2><h3>Consejos</h3><div class="key-point"><div class="key-point-title">Estrategias</div><ul><li>Lee las preguntas antes de escuchar</li><li>Escucha la idea principal</li><li>No te preocupes por cada palabra</li><li>Practica con podcasts y vídeos</li></ul></div>' },
+            { id: 'escritura', icon: '✍️', title: 'Expresión Escrita', desc: 'Cartas, artículos, ensayos, emails', lessons: 12, questions: 40, progress: 0, content: '<h2>Expresión Escrita</h2><h3>Tipos de Texto</h3><div class="key-point"><div class="key-point-title">Formatos</div><ul><li><strong>Carta formal:</strong> Estimado/a Señor/a</li><li><strong>Carta informal:</strong> Querido/a amigo/a</li><li><strong>Artículo:</strong> Opinión, información</li><li><strong>Email:</strong> Formal o informal</li><li><strong>Blog:</strong> Personal, opiniones</li></ul></div>' },
+            { id: 'cultura', icon: '🌍', title: 'Cultura Hispana', desc: 'España, Latinoamérica, tradiciones', lessons: 8, questions: 35, progress: 0, content: '<h2>Cultura Hispana</h2><h3>Países Hispanohablantes</h3><div class="key-point"><div class="key-point-title">Temas Culturales</div><ul><li>Fiestas y celebraciones</li><li>Comida típica</li><li>Música y baile</li><li>Arte y literatura</li><li>Historia y sociedad</li></ul></div>' },
+            { id: 'literatura', icon: '📜', title: 'Literatura', desc: 'Textos literarios, análisis, autores', lessons: 10, questions: 45, progress: 0, content: '<h2>Literatura</h2><h3>Análisis Literario</h3><div class="key-point"><div class="key-point-title">Elementos</div><ul><li>Tema y mensaje</li><li>Personajes y desarrollo</li><li>Estilo y técnicas</li><li>Contexto histórico</li></ul></div>' },
+            { id: 'verbos', icon: '📝', title: 'Verbos Irregulares', desc: 'Conjugaciones, excepciones, práctica', lessons: 14, questions: 55, progress: 0, content: '<h2>Verbos Irregulares</h2><h3>Verbos Comunes</h3><div class="key-point"><div class="key-point-title">Ejemplos</div><ul><li><strong>Ser/Estar:</strong> soy/estoy, fui/estuve</li><li><strong>Ir/Venir:</strong> voy/vengo, fui/vine</li><li><strong>Tener/Poder:</strong> tengo/puedo, tuve/pude</li><li><strong>Hacer/Decir:</strong> hago/digo, hice/dije</li></ul></div>' },
+            { id: 'temas', icon: '💬', title: 'Temas de Discusión', desc: 'Medio ambiente, tecnología, sociedad', lessons: 10, questions: 38, progress: 0, content: '<h2>Temas de Discusión</h2><h3>Temas del Examen</h3><div class="key-point"><div class="key-point-title">Categorías</div><ul><li>El medio ambiente y cambio climático</li><li>La tecnología y redes sociales</li><li>La educación y el futuro</li><li>La salud y estilo de vida</li><li>Los problemas sociales</li></ul></div>' }
         ];
 
         const flashcardsData = {
-            atomic: [
-                { q: "What is the atomic number?", a: "The number of protons in the nucleus of an atom" },
-                { q: "What is the mass number?", a: "The total number of protons and neutrons in the nucleus" },
-                { q: "What are isotopes?", a: "Atoms of the same element with different numbers of neutrons" },
-                { q: "What is electron configuration?", a: "The arrangement of electrons in energy levels and orbitals" },
-                { q: "State the Aufbau principle", a: "Electrons fill orbitals starting from the lowest energy level" },
-                { q: "What is Hund's rule?", a: "Electrons occupy orbitals singly before pairing up" },
-                { q: "What is the Pauli exclusion principle?", a: "No two electrons can have the same four quantum numbers" }
+            gramatica: [
+                { q: "¿Cuándo se usa el pretérito indefinido?", a: "Para acciones completadas en el pasado con tiempo específico" },
+                { q: "¿Cuándo se usa el imperfecto?", a: "Para descripciones, acciones habituales, o acciones en progreso en el pasado" },
+                { q: "¿Qué es el subjuntivo?", a: "Modo verbal para expresar deseos, emociones, dudas, y situaciones hipotéticas" },
+                { q: "¿Cuál es la diferencia entre 'ser' y 'estar'?", a: "Ser: características permanentes. Estar: estados temporales, ubicación, emociones" },
+                { q: "¿Cómo se forma el futuro regular?", a: "Infinitivo + é, ás, á, emos, éis, án" },
+                { q: "¿Cómo se forma el condicional?", a: "Infinitivo + ía, ías, ía, íamos, íais, ían" }
             ],
-            bonding: [
-                { q: "What is an ionic bond?", a: "A bond formed by the transfer of electrons from a metal to a non-metal" },
-                { q: "What is a covalent bond?", a: "A bond formed by the sharing of electrons between atoms" },
-                { q: "What is electronegativity?", a: "The ability of an atom to attract shared electrons in a covalent bond" },
-                { q: "What is a polar covalent bond?", a: "A covalent bond where electrons are unequally shared" },
-                { q: "What is metallic bonding?", a: "Bonding where positive ions are surrounded by delocalised electrons" },
-                { q: "What is a dative/coordinate bond?", a: "A covalent bond where both electrons come from the same atom" }
+            vocabulario: [
+                { q: "¿Cómo se dice 'environment' en español?", a: "El medio ambiente" },
+                { q: "¿Qué significa 'aprovecharse de'?", a: "To take advantage of (negativo)" },
+                { q: "¿Cómo se dice 'to achieve' en español?", a: "Lograr / Conseguir" },
+                { q: "¿Qué significa 'sin embargo'?", a: "However / Nevertheless" },
+                { q: "¿Cómo se dice 'health' en español?", a: "La salud" },
+                { q: "¿Qué significa 'desarrollar'?", a: "To develop" }
             ],
-            stoichiometry: [
-                { q: "What is Avogadro's number?", a: "6.022 × 10²³ - the number of particles in one mole" },
-                { q: "What is the molar mass?", a: "The mass of one mole of a substance, in g/mol" },
-                { q: "How do you calculate moles from mass?", a: "n = m / M (mass divided by molar mass)" },
-                { q: "What is a limiting reagent?", a: "The reactant that is completely consumed first" },
-                { q: "How do you calculate percentage yield?", a: "(Actual yield / Theoretical yield) × 100%" },
-                { q: "What is the molar volume of a gas at STP?", a: "22.4 L/mol (at 0°C and 1 atm)" }
+            comprension: [
+                { q: "¿Qué hacer primero en comprensión lectora?", a: "Leer las preguntas para saber qué buscar" },
+                { q: "¿Cómo encontrar la idea principal?", a: "Buscar en la primera y última frase de cada párrafo" },
+                { q: "¿Qué hacer con palabras desconocidas?", a: "Usar el contexto para deducir el significado" },
+                { q: "¿Cómo responder bien?", a: "Con tus propias palabras, citando el texto cuando sea necesario" }
             ],
-            organic: [
-                { q: "What is the general formula for alkanes?", a: "CₙH₂ₙ₊₂" },
-                { q: "What is the general formula for alkenes?", a: "CₙH₂ₙ" },
-                { q: "What is the functional group in alcohols?", a: "Hydroxyl group (-OH)" },
-                { q: "What is the functional group in carboxylic acids?", a: "Carboxyl group (-COOH)" },
-                { q: "What type of reaction do alkenes undergo?", a: "Addition reactions (across the C=C double bond)" },
-                { q: "What is esterification?", a: "The reaction between an alcohol and carboxylic acid to form an ester and water" }
+            oral: [
+                { q: "¿Cómo empezar la conversación oral?", a: "Con un saludo: Buenos días, me llamo..." },
+                { q: "¿Qué hacer si no entiendes una pregunta?", a: "Pedir que repitan: ¿Puede repetir la pregunta, por favor?" },
+                { q: "¿Cómo describir una imagen?", a: "Ubicación, personas, acciones, ambiente, tu opinión" },
+                { q: "¿Cómo dar tu opinión?", a: "En mi opinión..., Creo que..., Me parece que..." },
+                { q: "¿Cómo expresar acuerdo/desacuerdo?", a: "Estoy de acuerdo / No estoy de acuerdo porque..." }
             ],
-            acids: [
-                { q: "What is the Brønsted-Lowry definition of an acid?", a: "A proton (H⁺) donor" },
-                { q: "What is the Brønsted-Lowry definition of a base?", a: "A proton (H⁺) acceptor" },
-                { q: "How is pH calculated?", a: "pH = -log₁₀[H⁺]" },
-                { q: "What is a strong acid?", a: "An acid that fully dissociates in water" },
-                { q: "What is neutralisation?", a: "The reaction between an acid and a base to form salt and water" }
+            auditiva: [
+                { q: "¿Qué hacer antes de escuchar?", a: "Leer las preguntas y predecir las respuestas" },
+                { q: "¿Cómo tomar notas eficientemente?", a: "Escribir palabras clave, no frases completas" },
+                { q: "¿Qué hacer si pierdes una respuesta?", a: "Seguir adelante, no perder las siguientes" },
+                { q: "¿Cómo mejorar la comprensión auditiva?", a: "Escuchar podcasts, música, películas en español" }
             ],
-            redox: [
-                { q: "What is oxidation?", a: "Loss of electrons (or gain of oxygen)" },
-                { q: "What is reduction?", a: "Gain of electrons (or loss of oxygen)" },
-                { q: "At which electrode does oxidation occur in electrolysis?", a: "At the anode (oxidation)" },
-                { q: "At which electrode does reduction occur in electrolysis?", a: "At the cathode (reduction)" },
-                { q: "What is Faraday's equation?", a: "Q = It (Charge = Current × Time)" }
+            escritura: [
+                { q: "¿Cómo empezar una carta formal?", a: "Estimado/a Señor/a:" },
+                { q: "¿Cómo terminar una carta formal?", a: "Atentamente, / Le saluda atentamente," },
+                { q: "¿Cómo empezar una carta informal?", a: "Querido/a [nombre]:" },
+                { q: "¿Qué conectores usar para contrastar?", a: "Sin embargo, no obstante, aunque, pero, en cambio" },
+                { q: "¿Cómo estructurar un artículo?", a: "Introducción, desarrollo (argumentos), conclusión" }
             ],
-            rates: [
-                { q: "What are five factors that affect reaction rate?", a: "Temperature, concentration, surface area, catalyst, pressure" },
-                { q: "What is activation energy?", a: "The minimum energy required for a reaction to occur" },
-                { q: "What is a catalyst?", a: "A substance that speeds up a reaction by providing an alternative pathway with lower activation energy" },
-                { q: "What is Le Chatelier's Principle?", a: "When equilibrium is disturbed, it shifts to counteract the change" },
-                { q: "What is dynamic equilibrium?", a: "When the rate of forward reaction equals the rate of reverse reaction" }
+            cultura: [
+                { q: "¿Cuántos países tienen el español como idioma oficial?", a: "21 países" },
+                { q: "¿Qué es 'La Tomatina'?", a: "Festival de lanzamiento de tomates en Buñol, España" },
+                { q: "¿Qué es el Día de los Muertos?", a: "Celebración mexicana para honrar a los difuntos (1-2 noviembre)" },
+                { q: "¿Qué es el flamenco?", a: "Arte español que combina cante, baile y guitarra" },
+                { q: "¿Cuál es la capital de España?", a: "Madrid" }
+            ],
+            literatura: [
+                { q: "¿Qué es un tema literario?", a: "La idea principal o mensaje de una obra" },
+                { q: "¿Qué es el punto de vista narrativo?", a: "La perspectiva desde la cual se cuenta la historia" },
+                { q: "¿Qué es una metáfora?", a: "Comparación directa sin usar 'como'" },
+                { q: "¿Qué es el simbolismo?", a: "Usar objetos para representar ideas abstractas" }
+            ],
+            verbos: [
+                { q: "Conjuga 'ir' en pretérito", a: "fui, fuiste, fue, fuimos, fuisteis, fueron" },
+                { q: "Conjuga 'ser' en pretérito", a: "fui, fuiste, fue, fuimos, fuisteis, fueron (igual que 'ir')" },
+                { q: "Conjuga 'tener' en pretérito", a: "tuve, tuviste, tuvo, tuvimos, tuvisteis, tuvieron" },
+                { q: "Conjuga 'hacer' en pretérito", a: "hice, hiciste, hizo, hicimos, hicisteis, hicieron" },
+                { q: "Conjuga 'poder' en pretérito", a: "pude, pudiste, pudo, pudimos, pudisteis, pudieron" }
+            ],
+            temas: [
+                { q: "¿Cómo hablar del medio ambiente?", a: "El cambio climático, la contaminación, el reciclaje, energías renovables" },
+                { q: "¿Cómo hablar de la tecnología?", a: "Las redes sociales, ventajas/desventajas, la adicción digital" },
+                { q: "¿Cómo hablar de la educación?", a: "El sistema educativo, la presión estudiantil, el futuro laboral" },
+                { q: "¿Cómo expresar ventajas?", a: "Una ventaja es que..., Lo bueno es que..., Es beneficioso porque..." },
+                { q: "¿Cómo expresar desventajas?", a: "Una desventaja es que..., El problema es que..., Lo malo es que..." }
             ]
         };
 
         const quizData = {
-            atomic: [
-                { q: "What particle has a positive charge?", options: ["Proton", "Neutron", "Electron", "Photon"], correct: 0, explanation: "Protons have a positive charge and are found in the nucleus." },
-                { q: "An atom with 17 protons and 18 neutrons has a mass number of:", options: ["17", "18", "35", "1"], correct: 2, explanation: "Mass number = protons + neutrons = 17 + 18 = 35" },
-                { q: "Isotopes have different numbers of:", options: ["Protons", "Electrons", "Neutrons", "All"], correct: 2, explanation: "Isotopes have the same protons but different neutrons." },
-                { q: "The electron configuration of Na (Z=11) is:", options: ["2,8", "2,8,1", "2,8,2", "1,8,2"], correct: 1, explanation: "Sodium has 11 electrons: 2 in first shell, 8 in second, 1 in third." }
+            gramatica: [
+                { q: "'Ayer yo _____ al cine' - ¿Qué tiempo verbal?", options: ["fui (pretérito)", "iba (imperfecto)", "voy (presente)", "iré (futuro)"], correct: 0, explanation: "Usamos el pretérito porque es una acción completada en un momento específico del pasado." },
+                { q: "¿Cuándo se usa el subjuntivo?", options: ["Hechos ciertos", "Deseos y emociones", "Acciones pasadas", "Descripciones"], correct: 1, explanation: "El subjuntivo expresa deseos, emociones, dudas y situaciones hipotéticas." },
+                { q: "'El libro _____ en la mesa' - ¿ser o estar?", options: ["es", "está", "fue", "estuvo"], correct: 1, explanation: "Usamos 'estar' para ubicación." },
+                { q: "El futuro de 'tener' es:", options: ["teneré", "tendré", "tenré", "teniré"], correct: 1, explanation: "Tener es irregular en futuro: tendré, tendrás, tendrá..." }
             ],
-            bonding: [
-                { q: "Ionic bonds typically form between:", options: ["Two metals", "Two non-metals", "A metal and non-metal", "Metalloids"], correct: 2, explanation: "Ionic bonds form when metals transfer electrons to non-metals." },
-                { q: "The shape of a water molecule is:", options: ["Linear", "Bent", "Tetrahedral", "Trigonal planar"], correct: 1, explanation: "Water has a bent shape due to two bonding pairs and two lone pairs." },
-                { q: "The most electronegative element is:", options: ["Oxygen", "Chlorine", "Fluorine", "Nitrogen"], correct: 2, explanation: "Fluorine has the highest electronegativity (3.98)." }
+            vocabulario: [
+                { q: "¿Qué significa 'desarrollar'?", options: ["To destroy", "To develop", "To discover", "To decide"], correct: 1, explanation: "'Desarrollar' significa 'to develop'." },
+                { q: "El opuesto de 'ventaja' es:", options: ["Beneficio", "Desventaja", "Oportunidad", "Ventana"], correct: 1, explanation: "'Desventaja' es lo contrario de 'ventaja'." },
+                { q: "'Sin embargo' significa:", options: ["Without", "However", "Always", "Sometimes"], correct: 1, explanation: "'Sin embargo' es un conector que significa 'however'." },
+                { q: "¿Cómo se dice 'environment'?", options: ["El ambiente", "El medio ambiente", "La naturaleza", "El clima"], correct: 1, explanation: "'El medio ambiente' es la traducción más precisa de 'environment'." }
             ],
-            stoichiometry: [
-                { q: "How many moles are in 36g of water (H₂O)?", options: ["1 mol", "2 mol", "18 mol", "0.5 mol"], correct: 1, explanation: "Molar mass of H₂O = 18 g/mol. n = 36/18 = 2 mol" },
-                { q: "At STP, what volume does 0.5 mol of gas occupy?", options: ["11.2 L", "22.4 L", "44.8 L", "5.6 L"], correct: 0, explanation: "At STP, 1 mol = 22.4 L, so 0.5 mol = 11.2 L" },
-                { q: "What is the molar mass of CaCO₃?", options: ["60 g/mol", "84 g/mol", "100 g/mol", "112 g/mol"], correct: 2, explanation: "M = 40 + 12 + 3(16) = 100 g/mol" }
+            comprension: [
+                { q: "¿Qué hacer primero en comprensión lectora?", options: ["Leer todo el texto", "Leer las preguntas", "Escribir notas", "Buscar palabras"], correct: 1, explanation: "Lee las preguntas primero para saber qué información buscar." },
+                { q: "¿Dónde suele estar la idea principal?", options: ["En el medio", "Al principio/final del párrafo", "Solo al final", "En los ejemplos"], correct: 1, explanation: "La idea principal suele estar en la primera o última oración del párrafo." },
+                { q: "¿Cómo responder mejor?", options: ["Copiar el texto", "Con tus propias palabras", "Solo con una palabra", "En inglés"], correct: 1, explanation: "Es mejor responder con tus propias palabras, parafraseando el texto." }
             ],
-            organic: [
-                { q: "Which is the correct formula for propane?", options: ["C₂H₆", "C₃H₆", "C₃H₈", "C₄H₈"], correct: 2, explanation: "Propane is an alkane: CₙH₂ₙ₊₂ = C₃H₈" },
-                { q: "What is produced when alcohol reacts with carboxylic acid?", options: ["Aldehyde", "Ketone", "Ester", "Ether"], correct: 2, explanation: "Alcohol + carboxylic acid → ester + water" },
-                { q: "Alkenes undergo which type of reaction with bromine?", options: ["Substitution", "Elimination", "Addition", "Condensation"], correct: 2, explanation: "Alkenes undergo addition reactions across the double bond." }
+            oral: [
+                { q: "Para pedir repetición, dices:", options: ["¿Qué?", "No entiendo", "¿Puede repetir, por favor?", "Otra vez"], correct: 2, explanation: "'¿Puede repetir, por favor?' es la forma más educada de pedir repetición." },
+                { q: "Para dar tu opinión, dices:", options: ["Yo pienso", "En mi opinión", "Yo creo total", "Digo yo"], correct: 1, explanation: "'En mi opinión' es una expresión formal para introducir tu punto de vista." },
+                { q: "Al describir una imagen, menciona:", options: ["Solo personas", "Solo colores", "Ubicación, personas, acciones", "Tu comida favorita"], correct: 2, explanation: "Una buena descripción incluye ubicación, personas, acciones y ambiente." }
             ],
-            acids: [
-                { q: "What is the pH of a solution with [H⁺] = 0.001 M?", options: ["1", "2", "3", "4"], correct: 2, explanation: "pH = -log₁₀(0.001) = 3" },
-                { q: "Which is a strong acid?", options: ["Ethanoic acid", "Carbonic acid", "Hydrochloric acid", "Citric acid"], correct: 2, explanation: "HCl is a strong acid that fully dissociates." },
-                { q: "What is formed when NaOH reacts with HCl?", options: ["NaCl + H₂O", "NaCl + H₂", "NaH + ClO", "Na + HClO"], correct: 0, explanation: "NaOH + HCl → NaCl + H₂O (neutralisation)" }
+            auditiva: [
+                { q: "Antes de escuchar debes:", options: ["Cerrar los ojos", "Leer las preguntas", "No hacer nada", "Escribir mucho"], correct: 1, explanation: "Lee las preguntas antes para saber qué información escuchar." },
+                { q: "Si pierdes una respuesta:", options: ["Detener el audio", "Seguir adelante", "Abandonar", "Llorar"], correct: 1, explanation: "Sigue adelante para no perder las siguientes respuestas." },
+                { q: "Para mejorar la comprensión auditiva:", options: ["Leer más", "Escuchar español", "Solo estudiar gramática", "No practicar"], correct: 1, explanation: "Escuchar podcasts, música y películas en español mejora la comprensión." }
             ],
-            redox: [
-                { q: "In Zn + Cu²⁺ → Zn²⁺ + Cu, zinc is:", options: ["Oxidised", "Reduced", "Neither", "Both"], correct: 0, explanation: "Zinc loses electrons (Zn → Zn²⁺ + 2e⁻), so it is oxidised." },
-                { q: "At which electrode does oxidation occur in electrolysis?", options: ["Cathode", "Anode", "Both", "Neither"], correct: 1, explanation: "Oxidation always occurs at the anode (AN OX)." },
-                { q: "What is the oxidation state of S in H₂SO₄?", options: ["+2", "+4", "+6", "-2"], correct: 2, explanation: "2(+1) + S + 4(-2) = 0, so S = +6" }
+            escritura: [
+                { q: "Una carta formal empieza con:", options: ["Hola", "Querido", "Estimado/a Señor/a", "Amigo"], correct: 2, explanation: "'Estimado/a Señor/a:' es el saludo formal apropiado." },
+                { q: "Una carta formal termina con:", options: ["Adiós", "Besos", "Atentamente", "Hasta luego"], correct: 2, explanation: "'Atentamente' o 'Le saluda atentamente' son cierres formales." },
+                { q: "Para contrastar ideas usamos:", options: ["Y, también", "Sin embargo, aunque", "Porque, ya que", "Además, también"], correct: 1, explanation: "'Sin embargo' y 'aunque' son conectores de contraste." }
             ],
-            rates: [
-                { q: "Increasing temperature increases rate because:", options: ["More energetic collisions", "Lower activation energy", "Better catalyst", "Equilibrium shifts"], correct: 0, explanation: "Higher temperature means faster particles with more kinetic energy." },
-                { q: "A catalyst works by:", options: ["Increasing temperature", "Providing alternative pathway", "Increasing concentration", "Shifting equilibrium"], correct: 1, explanation: "Catalysts provide an alternative pathway with lower activation energy." },
-                { q: "For an exothermic reaction, increasing temperature will:", options: ["Shift right", "Shift left", "No effect", "Stop reaction"], correct: 1, explanation: "By Le Chatelier's principle, heating favours the endothermic (reverse) direction." }
+            cultura: [
+                { q: "¿Cuántos países hablan español oficialmente?", options: ["10", "15", "21", "30"], correct: 2, explanation: "El español es idioma oficial en 21 países." },
+                { q: "El Día de los Muertos se celebra en:", options: ["España", "México", "Argentina", "Cuba"], correct: 1, explanation: "El Día de los Muertos es una tradición mexicana del 1-2 de noviembre." },
+                { q: "¿Qué es el flamenco?", options: ["Una comida", "Un baile español", "Un país", "Un libro"], correct: 1, explanation: "El flamenco es un arte español que combina cante, baile y guitarra." }
+            ],
+            literatura: [
+                { q: "El tema de una obra es:", options: ["El título", "La idea principal", "Los personajes", "El autor"], correct: 1, explanation: "El tema es la idea principal o mensaje que transmite la obra." },
+                { q: "Una metáfora es:", options: ["Una comparación con 'como'", "Una comparación directa", "Una pregunta", "Un diálogo"], correct: 1, explanation: "Una metáfora es una comparación directa sin usar 'como' o 'parece'." }
+            ],
+            verbos: [
+                { q: "El pretérito de 'ir' (yo) es:", options: ["iba", "fui", "voy", "iré"], correct: 1, explanation: "El pretérito de 'ir' es irregular: fui, fuiste, fue..." },
+                { q: "El pretérito de 'hacer' (él) es:", options: ["hacía", "hace", "hizo", "hará"], correct: 2, explanation: "Hacer en pretérito: hice, hiciste, hizo..." },
+                { q: "'Poder' en futuro (yo) es:", options: ["puedo", "pude", "podré", "podía"], correct: 2, explanation: "Poder es irregular en futuro: podré, podrás, podrá..." }
+            ],
+            temas: [
+                { q: "Para expresar una ventaja dices:", options: ["El problema es...", "Una ventaja es que...", "No me gusta...", "Es malo porque..."], correct: 1, explanation: "'Una ventaja es que...' introduce un punto positivo." },
+                { q: "'El cambio climático' es tema de:", options: ["Familia", "Medio ambiente", "Deportes", "Música"], correct: 1, explanation: "El cambio climático es un tema medioambiental importante." }
             ]
         };
 
         const formulasData = [
-            { name: "Number of moles", equation: "n = m / M", desc: "Calculate moles from mass and molar mass", vars: "n = moles, m = mass (g), M = molar mass (g/mol)", category: "stoich" },
-            { name: "Concentration", equation: "C = n / V", desc: "Calculate molarity from moles and volume", vars: "C = concentration (M), n = moles, V = volume (L)", category: "stoich" },
-            { name: "Dilution", equation: "C₁V₁ = C₂V₂", desc: "Calculate dilution concentrations/volumes", vars: "C = concentration, V = volume", category: "stoich" },
-            { name: "Percentage Yield", equation: "% = (Actual / Theoretical) × 100", desc: "Calculate reaction efficiency", vars: "Actual = experimental, Theoretical = calculated", category: "stoich" },
-            { name: "Ideal Gas Equation", equation: "PV = nRT", desc: "Relates pressure, volume, moles and temperature", vars: "P = pressure, V = volume, n = moles, R = 8.314, T = temp (K)", category: "gas" },
-            { name: "Boyle's Law", equation: "P₁V₁ = P₂V₂", desc: "Pressure-volume at constant temperature", vars: "P = pressure, V = volume", category: "gas" },
-            { name: "Charles's Law", equation: "V₁/T₁ = V₂/T₂", desc: "Volume-temperature at constant pressure", vars: "V = volume, T = temperature (K)", category: "gas" },
-            { name: "pH", equation: "pH = -log₁₀[H⁺]", desc: "Calculate pH from hydrogen ion concentration", vars: "[H⁺] = hydrogen ion concentration (M)", category: "acids" },
-            { name: "pOH", equation: "pOH = -log₁₀[OH⁻]", desc: "Calculate pOH from hydroxide ion concentration", vars: "[OH⁻] = hydroxide ion concentration (M)", category: "acids" },
-            { name: "pH + pOH", equation: "pH + pOH = 14", desc: "Relationship at 25°C", vars: "At 25°C, pKw = 14", category: "acids" },
-            { name: "Heat Energy", equation: "q = mcΔT", desc: "Calculate heat in calorimetry", vars: "q = heat (J), m = mass (g), c = specific heat, ΔT = temp change", category: "thermo" },
-            { name: "Enthalpy of Reaction", equation: "ΔH = ΣΔHf(products) - ΣΔHf(reactants)", desc: "Using formation enthalpies", vars: "ΔHf = enthalpy of formation", category: "thermo" },
-            { name: "Faraday's Law", equation: "Q = It", desc: "Charge transferred in electrolysis", vars: "Q = charge (C), I = current (A), t = time (s)", category: "redox" },
-            { name: "Equilibrium Constant", equation: "Kc = [products]ᵖ / [reactants]ʳ", desc: "Equilibrium expression", vars: "Concentrations raised to stoichiometric coefficients", category: "rates" }
+            { name: "Pretérito Regular -AR", equation: "-é, -aste, -ó, -amos, -asteis, -aron", desc: "Terminaciones para verbos -AR en pretérito", vars: "hablar → hablé, hablaste, habló...", category: "gramatica" },
+            { name: "Pretérito Regular -ER/-IR", equation: "-í, -iste, -ió, -imos, -isteis, -ieron", desc: "Terminaciones para verbos -ER/-IR", vars: "comer → comí, vivir → viví", category: "gramatica" },
+            { name: "Futuro Regular", equation: "Infinitivo + é, ás, á, emos, éis, án", desc: "Formar el futuro simple", vars: "hablar + é = hablaré", category: "gramatica" },
+            { name: "Condicional", equation: "Infinitivo + ía, ías, ía, íamos, íais, ían", desc: "Formar el condicional", vars: "hablar + ía = hablaría", category: "gramatica" },
+            { name: "Subjuntivo Presente -AR", equation: "-e, -es, -e, -emos, -éis, -en", desc: "Subjuntivo presente para -AR", vars: "que yo hable, que tú hables...", category: "gramatica" },
+            { name: "Subjuntivo Presente -ER/-IR", equation: "-a, -as, -a, -amos, -áis, -an", desc: "Subjuntivo presente para -ER/-IR", vars: "que yo coma, que yo viva...", category: "gramatica" },
+            { name: "Carta Formal", equation: "Saludo → Cuerpo → Despedida", desc: "Estructura de carta formal", vars: "Estimado/a... → Contenido → Atentamente", category: "escritura" },
+            { name: "Carta Informal", equation: "Saludo → Cuerpo → Despedida", desc: "Estructura de carta informal", vars: "Querido/a... → Contenido → Un abrazo", category: "escritura" },
+            { name: "Estructura de Artículo", equation: "Introducción → Desarrollo → Conclusión", desc: "Cómo organizar un artículo", vars: "Presentar tema, argumentos, resumen final", category: "escritura" },
+            { name: "Descripción de Imagen", equation: "Ubicación + Personas + Acciones + Opinión", desc: "Elementos para describir imagen", vars: "En la foto veo..., Hay..., Están..., Creo que...", category: "oral" },
+            { name: "Opiniones", equation: "En mi opinión / Creo que / Me parece que", desc: "Expresar punto de vista", vars: "En mi opinión, es importante porque...", category: "oral" },
+            { name: "Conectores de Contraste", equation: "Sin embargo / Aunque / No obstante / Pero", desc: "Para contrastar ideas", vars: "Es bueno, sin embargo, tiene problemas", category: "escritura" },
+            { name: "Conectores de Adición", equation: "Además / También / Asimismo / Incluso", desc: "Para añadir información", vars: "Además, es importante mencionar...", category: "escritura" },
+            { name: "Ser vs Estar", equation: "Ser = permanente / Estar = temporal/ubicación", desc: "Cuándo usar cada verbo", vars: "Soy español / Estoy en casa / Estoy cansado", category: "gramatica" }
         ];
 
         const experimentsData = [
-            { id: 1, title: "Flame Tests", badge: "Inorganic", icon: "🔥", desc: "Identify metal ions by flame colour" },
-            { id: 2, title: "Titration (Acid-Base)", badge: "Quantitative", icon: "🧪", desc: "Determine concentration by neutralisation" },
-            { id: 3, title: "Rate of Reaction", badge: "Kinetics", icon: "⏱️", desc: "Measure effect of concentration on rate" },
-            { id: 4, title: "Preparation of Ethene", badge: "Organic", icon: "🧬", desc: "Dehydration of ethanol" },
-            { id: 5, title: "Esterification", badge: "Organic", icon: "🍎", desc: "Prepare an ester from alcohol and acid" },
-            { id: 6, title: "Electrolysis of Water", badge: "Electrochemistry", icon: "⚡", desc: "Decompose water into H₂ and O₂" },
-            { id: 7, title: "Heat of Reaction", badge: "Thermochemistry", icon: "🌡️", desc: "Measure enthalpy of neutralisation" },
-            { id: 8, title: "Tests for Anions", badge: "Analytical", icon: "🔬", desc: "Identify carbonate, sulfate, chloride" }
+            { id: 1, title: "Práctica Oral", badge: "Examen Oral", icon: "🗣️", desc: "Practica conversación con compañeros" },
+            { id: 2, title: "Escuchar Podcast", badge: "Comprensión", icon: "🎧", desc: "Escucha podcasts en español" },
+            { id: 3, title: "Escribir Diario", badge: "Escritura", icon: "📔", desc: "Escribe un diario en español" },
+            { id: 4, title: "Ver Películas", badge: "Cultura", icon: "🎬", desc: "Ve películas españolas con subtítulos" },
+            { id: 5, title: "Conjugar Verbos", badge: "Gramática", icon: "📝", desc: "Practica conjugaciones irregulares" },
+            { id: 6, title: "Leer Artículos", badge: "Lectura", icon: "📰", desc: "Lee noticias en español" },
+            { id: 7, title: "Roleplay", badge: "Examen Oral", icon: "🎭", desc: "Practica situaciones de roleplay" },
+            { id: 8, title: "Vocabulario Nuevo", badge: "Vocabulario", icon: "📕", desc: "Aprende 10 palabras nuevas cada día" }
         ];
 
         // ==================== STATE ====================
